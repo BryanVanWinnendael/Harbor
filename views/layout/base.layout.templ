@@ -1,8 +1,8 @@
 package layout
 
-import "harbor/views/partials"
+import "github.com/BryanVanWinnendael/Harbor/views/partials"
 
-templ Base(title, username string, fromProtected, isError bool, errMsgs, sucMsgs []string) {
+templ Base(title string, isError bool, errMsgs, sucMsgs []string) {
 	<!DOCTYPE html>
 	<html lang="en">
 		<head>
@@ -15,14 +15,14 @@ templ Base(title, username string, fromProtected, isError bool, errMsgs, sucMsgs
 			<meta name="google" content="notranslate"/>
 			<link rel="shortcut icon" href="/static/img/favicon.ico" type="ico"/>
 			<link rel="stylesheet" href="/css/output.css"/>
-			<title>Momez { title }</title>
+			<title>Harbor { title }</title>
 			<script src="https://unpkg.com/htmx.org@1.9.9" integrity="sha384-QFjmbokDn2DjBjq+fM+8LUIVrAgqcNW2s0PjAxHETgRn9l4fvX31ZxDxvwQnyMOX" crossorigin="anonymous"></script>
 			<script src="https://unpkg.com/hyperscript.org@0.9.12"></script>
 			<script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
 		</head>
 		<body class="sample-transition flex h-screen bg-gray-100" hx-boost="true">
-			if !isError && fromProtected {
-				@partials.Navbar(title, username)
+			if !isError {
+				@partials.Navbar(title)
 			}
 			<main class="w-full h-screen overflow-y-scroll p-8">
 				{ children... }

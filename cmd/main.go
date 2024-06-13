@@ -1,12 +1,20 @@
 package main
 
 import (
-	"harbor/handlers"
+	"os"
+
+	"github.com/BryanVanWinnendael/Harbor/handlers"
+	"github.com/BryanVanWinnendael/Harbor/services"
+	"github.com/gorilla/sessions"
+	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
-	"harbor/services"
 )
 
 func main() {
+	var (
+		SECRET_KEY string = os.Getenv("SECRET_KEY")
+	)
+
 	e := echo.New()
 
 	e.Static("/", "assets")
@@ -15,7 +23,8 @@ func main() {
 
 	e.HTTPErrorHandler = handlers.CustomHTTPErrorHandler
 
-	
+	e.Use(session.Middleware(sessions.NewCookieStore([]byte(SECRET_KEY))))
+
 	ds := services.NewDockerServices()
 
 	dh := handlers.NewDockerHandler(ds)

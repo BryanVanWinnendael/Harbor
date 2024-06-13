@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"harbor/views/errors_pages"
+	"github.com/BryanVanWinnendael/Harbor/views/errors_pages"
 
 	"github.com/a-h/templ"
 	"github.com/labstack/echo/v4"
@@ -17,7 +17,7 @@ func CustomHTTPErrorHandler(err error, c echo.Context) {
 	}
 	c.Logger().Error(err)
 
-	var errorPage func(fp bool) templ.Component
+	var errorPage func() templ.Component
 
 	switch code {
 	case 401:
@@ -32,9 +32,7 @@ func CustomHTTPErrorHandler(err error, c echo.Context) {
 
 	renderView(c, errors_pages.ErrorIndex(
 		fmt.Sprintf("| Error (%d)", code),
-		"",
-		fromProtected,
 		isError,
-		errorPage(fromProtected),
+		errorPage(),
 	))
 }

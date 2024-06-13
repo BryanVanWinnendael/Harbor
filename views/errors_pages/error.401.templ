@@ -1,8 +1,8 @@
 package errors_pages
 
-import "harbor/views/layout"
+import "github.com/BryanVanWinnendael/Harbor/views/layout"
 
-templ Error401(fromProtected bool) {
+templ Error401() {
 	<section class="flex flex-col items-center justify-center h-[100vh] gap-4">
 		<div class="items-center justify-center flex flex-col gap-4">
 			<h1 class="text-9xl font-extrabold text-[#7237c6] tracking-widest">
@@ -19,16 +19,12 @@ templ Error401(fromProtected bool) {
 }
 
 templ ErrorIndex(
-	title,
-	username string,
-	fromProtected bool,
+	title string,
 	isError bool,
 	cmp templ.Component,
 ) {
 	@layout.Base(
 		title,
-		username,
-		fromProtected,
 		isError,
 		[]string{},
 		[]string{},

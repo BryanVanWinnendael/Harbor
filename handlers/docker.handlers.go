@@ -1,9 +1,10 @@
 package handlers
 
 import (
-	"github.com/labstack/echo/v4"
+	"github.com/BryanVanWinnendael/Harbor/views/docker_views"
+
 	"github.com/a-h/templ"
-	"harbor/views/docker_views"
+	"github.com/labstack/echo/v4"
 )
 
 type DockerService interface {
@@ -27,14 +28,13 @@ func renderView(c echo.Context, cmp templ.Component) error {
 }
 
 func (ds *DockerHandler) mainHandler(c echo.Context) error {
+	isError = false
+
 	return renderView(c, docker_views.DockerIndex(
-		"| Create Post",
-		"",
-		fromProtected,
+		"| Home",
 		isError,
 		getFlashmessages(c, "error"),
 		getFlashmessages(c, "success"),
 		docker_views.Home(),
 	))
 }
-
