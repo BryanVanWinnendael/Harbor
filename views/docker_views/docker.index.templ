@@ -1,0 +1,18 @@
+package docker_views
+
+import (
+	"harbor/views/layout"
+)
+
+templ DockerIndex(
+	title,
+	username string,
+	fromProtected bool,
+	isError bool,
+	errMsgs, sucMsgs []string,
+	cmp templ.Component,
+) {
+	@layout.Base(title, username, fromProtected, isError, errMsgs, sucMsgs) {
+		@cmp
+	}
+}
