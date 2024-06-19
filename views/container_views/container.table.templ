@@ -1,0 +1,52 @@
+package container_views
+
+import (
+	"github.com/docker/docker/api/types"
+)
+
+templ ContainerTable(containers []types.Container) {
+	<table class="min-w-full h-full divide-y divide-neutral-800/50">
+		<thead>
+			<tr>
+				<th scope="col" class="py-3.5 px-4 text-sm font-normal text-left rtl:text-right text-gray-400">
+					ID
+				</th>
+				<th scope="col" class="px-4 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-400">
+					Name
+				</th>
+				<th scope="col" class="px-4 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-400">
+					State
+				</th>
+				<th scope="col" class="px-4 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-400">
+					Created
+				</th>
+				<th scope="col" class="relative py-3.5 px-4">
+					<span class="sr-only">View</span>
+				</th>
+			</tr>
+		</thead>
+		<tbody class="divide-y divide-neutral-800/50 overflow-y-scroll">
+			for _, container := range containers {
+				<tr>
+					<td class="px-4 py-4 text-sm font-medium text-gray-200 whitespace-nowrap">
+						<div class="inline-flex items-center gap-x-3">
+							<p>{ container.ID }</p>
+						</div>
+					</td>
+					<td class="px-4 py-4 text-sm text-gray-300 whitespace-nowrap">{ container.Names[0] }</td>
+					<td class="px-4 py-4 text-sm font-medium text-gray-700 whitespace-nowrap">
+						@ContainerStatus(container.State)
+					</td>
+					<td class="px-4 py-4 text-sm text-gray-300 whitespace-nowrap">
+						{ container.Status }
+					</td>
+					<td class="px-4 py-4 text-sm whitespace-nowrap">
+						<div class="flex items-center gap-x-6">
+							<a href={ templ.URL("/containers/" + container.ID) }>View </a>
+						</div>
+					</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+}

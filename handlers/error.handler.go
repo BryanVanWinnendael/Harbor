@@ -32,6 +32,7 @@ func CustomHTTPErrorHandler(err error, c echo.Context) {
 
 	renderView(c, errors_pages.ErrorIndex(
 		fmt.Sprintf("| Error (%d)", code),
+		fromProtected,
 		isError,
 		errorPage(),
 	))

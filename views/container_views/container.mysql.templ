@@ -1,0 +1,78 @@
+package container_views
+
+templ ContainerMysql() {
+	<button
+		data-ripple-light="true"
+		data-dialog-target="dialog-mysql"
+		class="flex items-center justify-center gap-2 bg-indigo-400 hover:bg-indigo-500 transition duration-100 text-white font-bold py-2 px-4 rounded"
+	>
+		<svg width="12px" height="12px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+			<path d="M4 12H20M12 4V20" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+		</svg>
+		MySQL Container
+	</button>
+	<div
+		data-dialog-backdrop="dialog-mysql"
+		data-dialog-backdrop-close="true"
+		class="pointer-events-none fixed inset-0 z-[999] grid h-screen w-screen place-items-center bg-black bg-opacity-60 opacity-0 backdrop-blur-sm transition-opacity duration-300"
+	>
+		<div
+			data-dialog="dialog-mysql"
+			class="relative m-4 w-2/5 min-w-[40%] sm:max-w-[40%] max-w-[90%] w-full border border-neutral-800/50 rounded-lg bg-[#171717] font-sans text-base font-light leading-relaxed text-white antialiased shadow-2xl"
+		>
+			<form
+				hx-swap="transition:true"
+				hx-headers="js:{'X-TimeZone': Intl.DateTimeFormat().resolvedOptions().timeZone}"
+				class="rounded-xl drop-shadow-xl flex flex-col gap-4 p-4"
+				action="/mysql/create"
+				method="post"
+			>
+				<label class="flex flex-col justify-start gap-2">
+					container name:
+					<input
+						autocomplete="off"
+						class="w-full bg-[#0b0b0b] border border-neutral-800/50 py-2 pl-3 rounded mt-2 outline-none "
+						type="text"
+						name="containerName"
+						required
+					/>
+				</label>
+				<label class="flex flex-col justify-start gap-2">
+					root password:
+					<input
+						data-1p-ignore
+						autocomplete="off"
+						class="w-full bg-[#0b0b0b] border border-neutral-800/50 py-2 pl-3 rounded mt-2 outline-none"
+						type="password"
+						name="rootPassword"
+						required
+					/>
+				</label>
+				<label class="flex flex-col justify-start gap-2">
+					database name:
+					<input
+						autocomplete="off"
+						class="w-full bg-[#0b0b0b] border border-neutral-800/50 py-2 pl-3 rounded mt-2 outline-none"
+						type="text"
+						name="databaseName"
+						required
+					/>
+				</label>
+				<label class="flex flex-col justify-start gap-2">
+					port:
+					<input
+						autocomplete="off"
+						value="3306"
+						class="w-full bg-[#0b0b0b] border border-neutral-800/50 py-2 pl-3 rounded mt-2 outline-none"
+						type="text"
+						name="hostPort"
+						required
+					/>
+				</label>
+				<button class="bg-neutral-200 rounded-md w-full px-3 py-2 text-black">
+					Setup MySQL Container
+				</button>
+			</form>
+		</div>
+	</div>
+}

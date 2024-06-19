@@ -1,45 +1,21 @@
-# 📷 Momez - Capture and save your favorite moments
+# Harbor - Docker Container Manager
 
 ## Features
-- Create an account
-- Share your photos with a caption to the world
-- Discover moments with a search of a caption
-- Favorite moments
-- Choose your profile picture
-- Edit or delete posts
-- Visit others' profiles
+- Manage your containers
+- Execute commands inside your containers
+- Manage your images
+- Easily create a mysql database
+- Pull images
+- Create containers from an image
 
-## Setup
-
-## Firebase 
-- Create a [firebase db](https://firebase.google.com/)
-- Setup A Realtime Database
-- Setup Storage
-
-In firebase Realtime Database > Rules, add the rules:
-```json
-"posts": {
-    ".indexOn": ["id", "username"]
-  },
-  "tags": {
-        ".indexOn": ["username"]
-      }
-```
-
-### Firebase serviceAccountKey
-Download the serviceAccountKey.json from
-[firebase admin](https://firebase.google.com/docs/admin/setup#initialize_the_sdk_in_non-google_environments) and put it in the root dir.
 
 ## .env
 Create a .env in the root dir with
 
 ```json
-DATABASE_URL="url"
-BUCKET_NAME="bucketname"
 SECRET_KEY="secretkey"
 ```
-DATABASE_URL and BUCKET_NAME can be found when going to Project settings > Your apps in firebase.
-If you don't see it, create an app.
+
 For the SECRET_KEY any value will do. This value will be used by the cookieStore.
 
 ## Run with docker

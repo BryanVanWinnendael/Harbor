@@ -1,0 +1,74 @@
+package image_views
+
+import (
+	"github.com/docker/docker/api/types/image"
+	"strconv"
+)
+
+templ ImageTable(images []image.Summary) {
+	<table class="min-w-full h-full divide-y divide-neutral-800/50">
+		<thead>
+			<tr>
+				<th scope="col" class="py-3.5 px-4 text-sm font-normal text-left rtl:text-right text-gray-400">
+					ID
+				</th>
+				<th scope="col" class="px-4 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-400">
+					Repository
+				</th>
+				<th scope="col" class="px-4 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-400">
+					Size
+				</th>
+				<th scope="col" class="px-4 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-400">
+					Used by
+				</th>
+				<th scope="col" class="relative py-3.5 px-4">
+					<span class="sr-only">Create container</span>
+				</th>
+				<th scope="col" class="relative py-3.5 px-4">
+					<span class="sr-only">Remove</span>
+				</th>
+			</tr>
+		</thead>
+		<tbody class="divide-y divide-neutral-800/50 overflow-y-scroll">
+			for _, image := range images {
+				<tr>
+					<td class="px-4 py-4 text-sm font-medium text-gray-200 whitespace-nowrap">
+						<div class="inline-flex items-center gap-x-3">
+							<p>{ image.ID }</p>
+						</div>
+					</td>
+					<td class="px-4 py-4 text-sm font-medium text-gray-200 whitespace-nowrap">
+						<div class="inline-flex items-center gap-x-3">
+							for _, tag := range image.RepoTags {
+								<p>{ tag }</p>
+							}
+						</div>
+					</td>
+					<td class="px-4 py-4 text-sm font-medium text-gray-200 whitespace-nowrap">
+						<div class="inline-flex items-center gap-x-3">
+							<p>{ strconv.FormatInt(image.Size /1000/1000, 10) } MB</p>
+						</div>
+					</td>
+					<td class="px-4 py-4 text-sm font-medium text-gray-200 whitespace-nowrap">
+						<div
+							hx-get={ "/images/" + image.ID + "/containers" }
+							hx-trigger="load, every 5s"
+							hx-swap="innerHTML"
+						></div>
+					</td>
+					<td class="px-4 py-4 text-sm whitespace-nowrap">
+						<div class="flex items-center gap-x-6">
+							@ImageCreateContainer(image.ID, image.RepoTags[0])
+						</div>
+					</td>
+					<td class="px-4 py-4 text-sm whitespace-nowrap">
+						<div class="flex items-center gap-x-6">
+							@ImageRemove(image.ID, image.RepoTags)
+						</div>
+					</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+	<script src="https://unpkg.com/@material-tailwind/html@latest/scripts/dialog.js"></script>
+}

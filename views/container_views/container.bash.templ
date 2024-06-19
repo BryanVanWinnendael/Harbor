@@ -1,0 +1,63 @@
+package container_views
+
+templ ContainerBash(containerID string) {
+	<button
+		data-dialog-target="dialog-bash"
+		class="w-full h-full flex items-center justify-center gap-2 bg-black hover:bg-neutral-900 text-white font-bold py-2 px-4 rounded stroke-white border border-neutral-800/50 transition duration-100"
+	>
+		<svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+			<path d="M10 10V7C10 5.34315 8.65685 4 7 4C5.34315 4 4 5.34315 4 7C4 8.65685 5.34315 10 7 10H10ZM10 10V14M10 10H14M10 14V17C10 18.6569 8.65685 20 7 20C5.34315 20 4 18.6569 4 17C4 15.3431 5.34315 14 7 14H10ZM10 14H14M14 10H17C18.6569 10 20 8.65685 20 7C20 5.34315 18.6569 4 17 4C15.3431 4 14 5.34315 14 7V10ZM14 10V14M14 14H17C18.6569 14 20 15.3431 20 17C20 18.6569 18.6569 20 17 20C15.3431 20 14 18.6569 14 17V14Z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+		</svg>
+		cmd
+	</button>
+	<div
+		data-dialog-backdrop="dialog-bash"
+		data-dialog-backdrop-close="true"
+		class="pointer-events-none fixed inset-0 z-[999] grid h-screen w-screen place-items-center bg-black bg-opacity-60 opacity-0 backdrop-blur-sm transition-opacity duration-300"
+	>
+		<div
+			data-dialog="dialog-bash"
+			class="relative m-4 w-2/5 min-w-[40%] sm:max-w-[40%] max-w-[90%] min-h-[60%] sm:max-h-[60%] max-h-[80%] h-full w-full border border-neutral-800/50 rounded-lg bg-[#171717] font-sans text-base font-light leading-relaxed text-white antialiased shadow-2xl"
+		>
+			<div class="w-full h-full">
+				<div
+					class="coding inverse-toggle px-5 pt-4 shadow-lg text-gray-100 text-sm font-mono subpixel-antialiased 
+              bg-black  pb-6 rounded-lg leading-normal overflow-hidden flex flex-col justify-between h-full w-full"
+				>
+					<div id="console-box" class="px-2 w-full overflow-y-scroll"></div>
+					<div class="mt-4 flex w-full">
+						<form
+							hx-on::after-request="this.reset()"
+							hx-swap="beforeend"
+							hx-target="#console-box"
+							hx-headers="js:{'X-TimeZone': Intl.DateTimeFormat().resolvedOptions().timeZone}"
+							class="rounded-xl drop-shadow-xl flex flex-col gap-4 mt-4 w-full"
+							action={ templ.URL("/containers/" + containerID + "/exec") }
+							method="post"
+						>
+							<input
+								name="cmd"
+								type="text"
+								class="w-full bg-transparent text-white outline-none border-none px-2"
+								placeholder="Enter your command here"
+							/>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script>
+		document.body.addEventListener('htmx:afterSwap', function(evt) {
+      let consoleContent = document.getElementById('console-box');
+			if (evt.target.matches('#console-box')) {
+				consoleContent.scrollTop = consoleContent.scrollHeight;
+			}
+		});
+
+		document.addEventListener('DOMContentLoaded', function() {
+			let consoleContent = document.getElementById('console-box');
+			consoleContent.scrollTop = consoleContent.scrollHeight;
+		});
+  </script>
+}

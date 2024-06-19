@@ -1,0 +1,108 @@
+package image_views
+
+templ ImageCreateContainer(imageID, imageName string) {
+	<button
+		data-dialog-target={ "dialog-create-image-container-" + imageName }
+		class="w-fit h-full flex items-center justify-center gap-2 bg-black hover:bg-neutral-900 text-white font-bold py-2 px-4 rounded stroke-white border border-neutral-800/50 transition duration-100"
+	>
+		<svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+			<path d="M2 7.5C2 6.71403 2.16486 5.96657 2.46189 5.29031L5.01041 7.83883C5.79146 8.61988 7.05779 8.61988 7.83884 7.83883C8.61989 7.05779 8.61989 5.79146 7.83884 5.01041L5.29032 2.46189C5.96658 2.16486 6.71404 2 7.5 2C10.5376 2 13 4.46243 13 7.5C13 8.28596 12.8351 9.03342 12.5381 9.70968L21.435 18.6066C22.2161 19.3877 22.2161 20.654 21.435 21.435V21.435C20.654 22.2161 19.3877 22.2161 18.6066 21.435L9.70968 12.5381C9.03342 12.8351 8.28597 13 7.5 13C4.46243 13 2 10.5376 2 7.5Z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+		</svg>
+		create container
+	</button>
+	<div
+		data-dialog-backdrop={ "dialog-create-image-container-" + imageName }
+		data-dialog-backdrop-close="true"
+		class="pointer-events-none fixed inset-0 z-[999] grid h-screen w-screen place-items-center bg-black bg-opacity-60 opacity-0 backdrop-blur-sm transition-opacity duration-300"
+	>
+		<div
+			data-dialog={ "dialog-create-image-container-" + imageName }
+			class="relative m-4 w-2/5 min-w-[40%] sm:max-w-[40%] max-w-[90%] h-fit w-full border border-neutral-800/50 rounded-lg bg-[#171717] font-sans text-base font-light leading-relaxed text-white antialiased shadow-2xl"
+		>
+			<div class="w-full h-full">
+				<div
+					class="px-5 shadow-lg bg-black pb-4 rounded-lg leading-normal flex flex-col justify-center w-full h-full"
+				>
+					<form
+						hx-swap="transition:true"
+						hx-headers="js:{'X-TimeZone': Intl.DateTimeFormat().resolvedOptions().timeZone}"
+						class="rounded-xl drop-shadow-xl flex flex-col gap-4 mt-4"
+						action={ templ.URL("/images/" + imageID + "/container") }
+						method="post"
+					>
+						<label class="flex flex-col justify-start gap-2">
+							Image:
+							<input
+								class="w-full bg-[#1c1c1c] border border-neutral-800/50 py-2 pl-3 rounded mt-2 outline-none "
+								type="text"
+								name="image"
+								disabled
+								value={ imageName }
+								required
+							/>
+						</label>
+						<label class="flex flex-col justify-start gap-2">
+							Container name:
+							<input
+								class="w-full bg-[#1c1c1c] border border-neutral-800/50 py-2 pl-3 rounded mt-2 outline-none "
+								type="text"
+								name="name"
+								required
+							/>
+						</label>
+						<label class="flex flex-col justify-start gap-2">
+							<div class="flex gap-1 items-center">
+								Mapped Port:	
+								<div x-data="{ isOpen: false }">
+									<svg
+										@mouseover="isOpen = true"
+										@mouseleave="isOpen = false"
+										width="14"
+										height="14"
+										viewBox="0 0 24 24"
+										fill="none"
+										xmlns="http://www.w3.org/2000/svg"
+									>
+										<path d="M12 17.75C12.4142 17.75 12.75 17.4142 12.75 17V11C12.75 10.5858 12.4142 10.25 12 10.25C11.5858 10.25 11.25 10.5858 11.25 11V17C11.25 17.4142 11.5858 17.75 12 17.75Z" fill="white"></path>
+										<path d="M12 7C12.5523 7 13 7.44772 13 8C13 8.55228 12.5523 9 12 9C11.4477 9 11 8.55228 11 8C11 7.44772 11.4477 7 12 7Z" fill="white"></path>
+										<path fill-rule="evenodd" clip-rule="evenodd" d="M1.25 12C1.25 6.06294 6.06294 1.25 12 1.25C17.9371 1.25 22.75 6.06294 22.75 12C22.75 17.9371 17.9371 22.75 12 22.75C6.06294 22.75 1.25 17.9371 1.25 12ZM12 2.75C6.89137 2.75 2.75 6.89137 2.75 12C2.75 17.1086 6.89137 21.25 12 21.25C17.1086 21.25 21.25 17.1086 21.25 12C21.25 6.89137 17.1086 2.75 12 2.75Z" fill="white"></path>
+									</svg>
+									<div
+										x-show="isOpen"
+										x-transition:enter="transition ease-out duration-300"
+										x-transition:enter-start="opacity-0 transform scale-95"
+										x-transition:enter-end="opacity-100 transform scale-100"
+										x-transition:leave="transition ease-in duration-200"
+										x-transition:leave-start="opacity-100 transform scale-100"
+										x-transition:leave-end="opacity-0 transform scale-95"
+										class="popover absolute rounded shadow-lg bg-[#171717] border border-neutral-800/50 mt-2 px-4 py-2 max-w-64 whitespace-normal"
+									>
+										<p class="text-white">If only host_port is provided, it will map host_port on your machine to the exposed ports in the container.</p>
+									</div>
+								</div>
+							</div>
+							<input
+								class="w-full bg-[#1c1c1c] border border-neutral-800/50 py-2 pl-3 rounded mt-2 outline-none "
+								type="text"
+								name="mappedPort"
+								placeholder="host_port:container_port || host_port"
+							/>
+						</label>
+						<label class="flex flex-col justify-start gap-2">
+							Env:
+							<input
+								class="w-full bg-[#1c1c1c] border border-neutral-800/50 py-2 pl-3 rounded mt-2 outline-none "
+								type="text"
+								name="env"
+								placeholder="key1=value1,key2=value2"
+							/>
+						</label>
+						<button class="bg-neutral-200 rounded-md w-full px-3 py-2 text-black">
+							Create Container
+						</button>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+}

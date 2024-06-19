@@ -3,8 +3,8 @@ tmp_dir = "tmp"
 testdata_dir = "testdata"
 
 [build]
-bin = "./tmp/main.exe"
-cmd = "templ generate && go build -o ./tmp/main.exe ./cmd/main.go"
+bin = "./tmp/main"
+cmd = "templ generate && go build -o ./tmp/main ./cmd/main.go"
 delay = 1000
 exclude_dir = ["assets", "tmp", "vendor", "testdata"]
 exclude_file = []

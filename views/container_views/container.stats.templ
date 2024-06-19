@@ -1,0 +1,15 @@
+package container_views
+
+import (
+	"github.com/BryanVanWinnendael/Harbor/dto"
+)
+
+templ ContainerStats(stats dto.ContainerStats) {
+	<div
+		id="stats-content"
+		class="flex gap-2 w-full"
+	>
+		<p class="inline-flex items-center px-3 py-1 rounded-full gap-x-2 text-white bg-black border border-neutral-800/50">cpu: { stats.CPUPercentage }</p>
+		<p class="inline-flex items-center px-3 py-1 rounded-full gap-x-2 text-white bg-black border border-neutral-800/50">memory: { stats.MemoryUsageMB }</p>
+	</div>
+}

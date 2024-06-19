@@ -1,0 +1,17 @@
+package analytics_views 
+
+import (
+	"github.com/BryanVanWinnendael/Harbor/views/layout"
+)
+
+templ AnalyticsIndex(
+	title string,
+	fromProtected bool,
+	isError bool,
+	errMsgs, sucMsgs []string,
+	cmp templ.Component,
+) {
+	@layout.Base(title, fromProtected, isError, errMsgs, sucMsgs) {
+		@cmp
+	}
+}

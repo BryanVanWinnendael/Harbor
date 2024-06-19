@@ -1,0 +1,37 @@
+package container_views
+
+import (
+	"github.com/docker/docker/api/types"
+)
+
+templ ContainerHome(containers []types.Container) {
+	<section class="w-full flex flex-col gap-2 h-full overflow-hidden">
+		<div class="w-full flex items-center gap-4">
+			@ContainerMysql()
+			@ContainerPrune()
+			<a href="/images" class="w-fit h-full flex items-center justify-center gap-2 bg-[#0b0b0b] hover:bg-neutral-900 text-white font-bold py-2 px-4 rounded stroke-white border border-neutral-800/50 transition duration-100">
+				<svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+					<path d="M21.2799 6.40005L11.7399 15.94C10.7899 16.89 7.96987 17.33 7.33987 16.7C6.70987 16.07 7.13987 13.25 8.08987 12.3L17.6399 2.75002C17.8754 2.49308 18.1605 2.28654 18.4781 2.14284C18.7956 1.99914 19.139 1.92124 19.4875 1.9139C19.8359 1.90657 20.1823 1.96991 20.5056 2.10012C20.8289 2.23033 21.1225 2.42473 21.3686 2.67153C21.6147 2.91833 21.8083 3.21243 21.9376 3.53609C22.0669 3.85976 22.1294 4.20626 22.1211 4.55471C22.1128 4.90316 22.0339 5.24635 21.8894 5.5635C21.7448 5.88065 21.5375 6.16524 21.2799 6.40005V6.40005Z" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+					<path d="M11 4H6C4.93913 4 3.92178 4.42142 3.17163 5.17157C2.42149 5.92172 2 6.93913 2 8V18C2 19.0609 2.42149 20.0783 3.17163 20.8284C3.92178 21.5786 4.93913 22 6 22H17C19.21 22 20 20.2 20 18V13" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+				</svg>
+				edit images
+			</a>
+			<a href="/analytics" class="w-fit h-full flex items-center justify-center gap-2 bg-[#0b0b0b] hover:bg-neutral-900 text-white font-bold py-2 px-4 rounded fill-white border border-neutral-800/50 transition duration-100">
+				<svg width="14" height="14" viewBox="0 0 1920 1920" xmlns="http://www.w3.org/2000/svg">
+					<path d="M746.667 106.667H1173.33V1493.33H746.667V106.667ZM533.333 533.333H106.667V1493.33H533.333V533.333ZM1920 1706.67H0V1824H1920V1706.67ZM1813.33 746.667H1386.67V1493.33H1813.33V746.667Z"></path>
+				</svg>
+				analytics
+			</a>
+		</div>
+		<div class="overflow-scroll border border-neutral-800/50 rounded-lg h-full bg-[#0b0b0b]">
+			<div
+				hx-get="/containers"
+				hx-trigger="load, every 5s"
+				hx-swap="innerHTML"
+				class="flex h-full w-full"
+			>
+				@ContainerTable(containers)
+			</div>
+		</div>
+	</section>
+}

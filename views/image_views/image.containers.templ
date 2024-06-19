@@ -1,0 +1,15 @@
+package image_views
+
+import (
+	"github.com/docker/docker/api/types"
+)
+
+templ ImageContainers(containers []types.Container) {
+	<div class="inline-flex items-center gap-x-3">
+		for _, container := range containers {
+			<p>
+				{ container.Names[0] }
+			</p>
+		}
+	</div>
+}

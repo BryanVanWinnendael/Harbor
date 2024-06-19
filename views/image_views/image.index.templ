@@ -1,16 +1,17 @@
-package docker_views
+package image_views 
 
 import (
 	"github.com/BryanVanWinnendael/Harbor/views/layout"
 )
 
-templ DockerIndex(
+templ ImageIndex(
 	title string,
+	fromProtected bool,
 	isError bool,
 	errMsgs, sucMsgs []string,
 	cmp templ.Component,
 ) {
-	@layout.Base(title, isError, errMsgs, sucMsgs) {
+	@layout.Base(title, fromProtected, isError, errMsgs, sucMsgs) {
 		@cmp
 	}
 }

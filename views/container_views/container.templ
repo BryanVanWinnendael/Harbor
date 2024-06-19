@@ -1,0 +1,168 @@
+package container_views
+
+import (
+	"github.com/docker/docker/api/types"
+	"github.com/BryanVanWinnendael/Harbor/dto"
+)
+
+templ Container(container types.ContainerJSON, publicURLs [][]string) {
+	<div id="container-box" class="w-full flex flex-col overflow-hidden h-full border border-neutral-800/50 rounded-lg bg-[#0b0b0b] transition duration-100">
+		<div class="w-full border-b-[1px] border-neutral-800/50 p-2 flex gap-4 overflow-x-scroll">
+			<a href="/" class="flex justify-center items-center">
+				<svg width="20" height="20" viewBox="0 0 1024 1024" fill="white" class="icon" version="1.1" xmlns="http://www.w3.org/2000/svg"><path d="M669.6 849.6c8.8 8 22.4 7.2 30.4-1.6s7.2-22.4-1.6-30.4l-309.6-280c-8-7.2-8-17.6 0-24.8l309.6-270.4c8.8-8 9.6-21.6 2.4-30.4-8-8.8-21.6-9.6-30.4-2.4L360.8 480.8c-27.2 24-28 64-0.8 88.8l309.6 280z" fill=""></path></svg>
+			</a>
+			<div class="flex items-center">
+				<h4 class="scroll-m-20 text-xl font-semibold tracking-tight">{ container.Name }</h4>
+			</div>
+			<div
+				hx-get={ "/containers/" + container.ID + "/status" }
+				hx-trigger="load, every 1s"
+				hx-swap="innerHTML"
+				class="flex items-center"
+			>
+				@ContainerStatus(container.State.Status)
+			</div>
+			<div class="flex items-center">
+				for _, url := range publicURLs {
+					<a class="inline-flex items-center px-3 py-1 rounded-full gap-x-2 text-white bg-black text-sm font-normal border border-neutral-800/50 underline" target="_blank" href={ templ.URL(url[0]) }>{ url[1] }</a>
+				}
+			</div>
+		</div>
+		<div class="flex justify-between overflow-x-scroll w-full p-4 gap-2">
+			<div class="flex gap-2">
+				<button
+					hx-target="body"
+					hx-post={ "/containers/" + container.ID + "/restart" }
+					hx-swap="transition:false"
+					class="w-full h-full flex items-center justify-center gap-2 bg-indigo-800 hover:bg-indigo-900 text-white font-bold py-2 px-4 rounded stroke-white border border-neutral-800/50 transition duration-100"
+				>
+					<svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+						<g clip-path="url(#clip0_1276_7761)">
+							<path d="M19.7285 10.9288C20.4413 13.5978 19.7507 16.5635 17.6569 18.6573C15.1798 21.1344 11.4826 21.6475 8.5 20.1966M18.364 8.05071L17.6569 7.3436C14.5327 4.21941 9.46736 4.21941 6.34316 7.3436C3.42964 10.2571 3.23318 14.8588 5.75376 18M18.364 8.05071H14.1213M18.364 8.05071V3.80807" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+						</g>
+						<defs>
+							<clipPath id="clip0_1276_7761">
+								<rect width="24" height="24" fill="white"></rect>
+							</clipPath>
+						</defs>
+					</svg>
+					restart 
+				</button>
+				if container.State.Status == "running" {
+					<button
+						hx-target="body"
+						hx-post={ "/containers/" + container.ID + "/pause" }
+						hx-swap="transition:false"
+						class="w-full h-full flex items-center justify-center gap-2 bg-orange-800 hover:bg-orange-900 text-white font-bold py-2 px-4 rounded stroke-white border border-neutral-800/50 transition duration-100"
+					>
+						<svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+							<path d="M8 5V19M16 5V19" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+						</svg>
+						pause
+					</button>
+				} else if container.State.Status == "paused" {
+					<button
+						hx-target="body"
+						hx-post={ "/containers/" + container.ID + "/unpause" }
+						hx-swap="transition:false"
+						class="w-full h-full flex items-center justify-center gap-2 bg-yellow-800 hover:bg-yellow-900 text-white font-bold py-2 px-4 rounded stroke-white border border-neutral-800/50 transition duration-100"
+					>
+						<svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+							<path d="M15 5V19M21 5V19M3 7.20608V16.7939C3 17.7996 3 18.3024 3.19886 18.5352C3.37141 18.7373 3.63025 18.8445 3.89512 18.8236C4.20038 18.7996 4.55593 18.4441 5.26704 17.733L10.061 12.939C10.3897 12.6103 10.554 12.446 10.6156 12.2565C10.6697 12.0898 10.6697 11.9102 10.6156 11.7435C10.554 11.554 10.3897 11.3897 10.061 11.061L5.26704 6.26704C4.55593 5.55593 4.20038 5.20038 3.89512 5.17636C3.63025 5.15551 3.37141 5.26273 3.19886 5.46476C3 5.69759 3 6.20042 3 7.20608Z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+						</svg>
+						unpause
+					</button>
+				}
+				if container.State.Status == "running" {
+					<button
+						hx-target="body"
+						hx-post={ "/containers/" + container.ID + "/stop" }
+						hx-swap="transition:false"
+						class="w-full h-full flex items-center justify-center gap-2 bg-red-800 hover:bg-red-900 text-white font-bold py-2 px-4 rounded stroke-white border border-neutral-800/50 transition duration-100"
+					>
+						<svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+							<path fill-rule="evenodd" clip-rule="evenodd" d="M11.9426 1.25H12.0574C14.3658 1.24999 16.1748 1.24998 17.5863 1.43975C19.031 1.63399 20.1711 2.03933 21.0659 2.93414C21.9607 3.82895 22.366 4.96897 22.5603 6.41371C22.75 7.82519 22.75 9.63423 22.75 11.9426V12.0574C22.75 14.3658 22.75 16.1748 22.5603 17.5863C22.366 19.031 21.9607 20.1711 21.0659 21.0659C20.1711 21.9607 19.031 22.366 17.5863 22.5603C16.1748 22.75 14.3658 22.75 12.0574 22.75H11.9426C9.63423 22.75 7.82519 22.75 6.41371 22.5603C4.96897 22.366 3.82895 21.9607 2.93414 21.0659C2.03933 20.1711 1.63399 19.031 1.43975 17.5863C1.24998 16.1748 1.24999 14.3658 1.25 12.0574V11.9426C1.24999 9.63423 1.24998 7.82519 1.43975 6.41371C1.63399 4.96897 2.03933 3.82895 2.93414 2.93414C3.82895 2.03933 4.96897 1.63399 6.41371 1.43975C7.82519 1.24998 9.63423 1.24999 11.9426 1.25ZM6.61358 2.92637C5.33517 3.09825 4.56445 3.42514 3.9948 3.9948C3.42514 4.56445 3.09825 5.33517 2.92637 6.61358C2.75159 7.91356 2.75 9.62178 2.75 12C2.75 14.3782 2.75159 16.0864 2.92637 17.3864C3.09825 18.6648 3.42514 19.4355 3.9948 20.0052C4.56445 20.5749 5.33517 20.9018 6.61358 21.0736C7.91356 21.2484 9.62178 21.25 12 21.25C14.3782 21.25 16.0864 21.2484 17.3864 21.0736C18.6648 20.9018 19.4355 20.5749 20.0052 20.0052C20.5749 19.4355 20.9018 18.6648 21.0736 17.3864C21.2484 16.0864 21.25 14.3782 21.25 12C21.25 9.62178 21.2484 7.91356 21.0736 6.61358C20.9018 5.33517 20.5749 4.56445 20.0052 3.9948C19.4355 3.42514 18.6648 3.09825 17.3864 2.92637C16.0864 2.75159 14.3782 2.75 12 2.75C9.62178 2.75 7.91356 2.75159 6.61358 2.92637Z" fill="#fb7185"></path>
+						</svg>
+						stop
+					</button>
+				} else if container.State.Status == "exited" {
+					<button
+						hx-target="body"
+						hx-post={ "/containers/" + container.ID + "/start" }
+						hx-swap="transition:false"
+						class="w-full h-full flex items-center justify-center gap-2 bg-emerald-800 hover:bg-emerald-900 text-white font-bold py-2 px-4 rounded fill-white border border-neutral-800/50 transition duration-100"
+					>
+						<svg width="12" height="12" viewBox="-2 0 32 32" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid">
+							<path d="M26.530,31.994 C26.222,31.994 25.915,31.903 25.619,31.722 L2.000,17.205 L2.000,31.000 C2.000,31.553 1.552,32.000 1.000,32.000 C0.448,32.000 -0.000,31.553 -0.000,31.000 L-0.000,1.006 C-0.000,0.453 0.448,0.006 1.000,0.006 C1.552,0.006 2.000,0.453 2.000,1.006 L2.000,13.855 L25.628,0.248 C25.917,0.083 26.211,-0.000 26.507,-0.000 C27.372,-0.000 28.000,0.689 28.000,1.639 L28.000,30.367 C28.000,31.435 27.260,31.994 26.530,31.994 ZM3.097,15.531 L26.000,29.608 L26.000,2.341 L3.097,15.531 Z"></path>
+						</svg>
+						start
+					</button>
+				}
+				<button
+					hx-target="body"
+					hx-post={ "/containers/" + container.ID + "/recreate" }
+					hx-swap="transition:false"
+					class="w-full h-full flex items-center justify-center gap-2 bg-zinc-800 hover:bg-zinc-900 text-white font-bold py-2 px-4 rounded stroke-white border border-neutral-800/50 transition duration-100"
+				>
+					<svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+						<path d="M2 7.5C2 6.71403 2.16486 5.96657 2.46189 5.29031L5.01041 7.83883C5.79146 8.61988 7.05779 8.61988 7.83884 7.83883C8.61989 7.05779 8.61989 5.79146 7.83884 5.01041L5.29032 2.46189C5.96658 2.16486 6.71404 2 7.5 2C10.5376 2 13 4.46243 13 7.5C13 8.28596 12.8351 9.03342 12.5381 9.70968L21.435 18.6066C22.2161 19.3877 22.2161 20.654 21.435 21.435V21.435C20.654 22.2161 19.3877 22.2161 18.6066 21.435L9.70968 12.5381C9.03342 12.8351 8.28597 13 7.5 13C4.46243 13 2 10.5376 2 7.5Z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+					</svg>
+					recreate 
+				</button>
+			</div>
+			<div class="flex gap-2">
+				@ContainerBash(container.ID)
+				@ContainerRemove(container.ID)
+			</div>
+		</div>
+		<div
+			hx-get={ "/containers/" + container.ID + "/stats" }
+			hx-trigger="load, every 5s"
+			hx-swap="#stats-content"
+			class="w-full overflow-scroll pb-4 px-4"
+		>
+			@ContainerStats(dto.ContainerStats{})
+		</div>
+		<div class="bg-black p-4 rounded-lg h-full w-full overflow-hidden">
+			<div
+				hx-get={ "/containers/" + container.ID + "/logs" }
+				hx-trigger="load, every 5s"
+				hx-swap="#log-content"
+				class="h-full w-full overflow-scroll"
+				id="log-box"
+			>
+				@ContainerLogs("")
+			</div>
+		</div>
+	</div>
+	<script>
+		localStorage.setItem('logScrollPosition', 'bottom');
+		function isScrollAtBottom() {
+			let logContent = document.getElementById('log-box');
+			return logContent.scrollHeight - logContent.scrollTop <= logContent.clientHeight;
+		}
+
+		document.body.addEventListener('htmx:afterSwap', function(evt) {
+			let logContent = document.getElementById('log-box');
+			const logScrollPosition = localStorage.getItem('logScrollPosition');
+			if (evt.target.matches('#log-box') && logScrollPosition === 'bottom') {
+
+				logContent.scrollTop = logContent.scrollHeight;
+				localStorage.setItem('logScrollPosition', 'bottom');
+			}
+		});
+
+		document.addEventListener('DOMContentLoaded', function() {
+			let logContent = document.getElementById('log-box');
+			logContent.scrollTop = logContent.scrollHeight;
+		});
+
+		document.getElementById('log-box').addEventListener('scroll', function() {
+			if (isScrollAtBottom()) {
+				localStorage.setItem('logScrollPosition', 'bottom');
+			} else {
+				localStorage.removeItem('logScrollPosition');
+			}
+		});
+  </script>
+}
