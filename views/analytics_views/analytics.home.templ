@@ -8,12 +8,30 @@ templ AnalyticsHome() {
 				back
 			</a>
 		</div>
-		<div class="w-full h-full">
+		<div class="h-full w-full md:!grid flex flex-col gap-2 grid-cols-3 grid-rows-2 overflow-hidden">
 			<div
 				hx-get="/analytics/usage"
-				hx-trigger="load, every 5s"
+				hx-trigger="load, every 15s"
 				hx-swap="#innerHTML"
-				class="border border-neutral-800/50 rounded-lg h-fit w-fit bg-[#0b0b0b]"
+				class="border border-neutral-800/50 rounded-lg h-full w-full bg-[#0b0b0b] col-start-1"
+			></div>
+			<div
+				hx-get="/analytics/cpu"
+				hx-trigger="load, every 15s"
+				hx-swap="#innerHTML"
+				class="border border-neutral-800/50 rounded-lg h-full w-full bg-[#0b0b0b] col-start-2 col-span-3"
+			></div>
+			<div
+				hx-get="/analytics/memory"
+				hx-trigger="load, every 15s"
+				hx-swap="#innerHTML"
+				class="border border-neutral-800/50 rounded-lg h-full w-full bg-[#0b0b0b] row-start-2 col-span-2"
+			></div>
+			<div
+				hx-get="/analytics/network"
+				hx-trigger="load, every 1111115s"
+				hx-swap="#innerHTML"
+				class="border border-neutral-800/50 rounded-lg h-full w-full bg-[#0b0b0b] row-start-2 col-span-3"
 			></div>
 		</div>
 	</section>

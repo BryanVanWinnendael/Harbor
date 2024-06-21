@@ -38,11 +38,15 @@ func main() {
 
 	if err != nil {
 		e.Logger.Fatal(err)
+	} else {
+		e.Logger.Infof("Connected to Docker Daemon")
 	}
 
 	store, err := db.NewStore(DB_NAME)
 	if err != nil {
 		e.Logger.Fatalf("failed to create store: %s", err)
+	} else {
+		e.Logger.Infof("Connected to Database")
 	}
 
 	us := services.NewUserServices(services.User{}, store)

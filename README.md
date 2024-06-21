@@ -7,6 +7,13 @@
 - Easily create a mysql database
 - Pull images
 - Create containers from an image
+- Analytics
+- Cleanup docker with prune
+
+![containers](https://firebasestorage.googleapis.com/v0/b/portfolio-21d2a.appspot.com/o/harbor2.png?alt=media&token=ece6675e-df23-4bbc-a792-b29ef8094b84)
+![images](https://firebasestorage.googleapis.com/v0/b/portfolio-21d2a.appspot.com/o/harbor3.png?alt=media&token=ece6675e-df23-4bbc-a792-b29ef8094b84)
+![execute](https://firebasestorage.googleapis.com/v0/b/portfolio-21d2a.appspot.com/o/harbor1.png?alt=media&token=ece6675e-df23-4bbc-a792-b29ef8094b84)
+![analytics](https://firebasestorage.googleapis.com/v0/b/portfolio-21d2a.appspot.com/o/harbor4.png?alt=media&token=ece6675e-df23-4bbc-a792-b29ef8094b84)
 
 
 ## .env

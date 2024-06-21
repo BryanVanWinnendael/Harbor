@@ -2,11 +2,13 @@ package services
 
 import (
 	"context"
+	"encoding/json"
 	"log"
 	"strconv"
 
 	"github.com/BryanVanWinnendael/Harbor/dto"
 	"github.com/docker/docker/api/types"
+	"github.com/docker/docker/api/types/container"
 	"github.com/shirou/gopsutil/disk"
 
 	"github.com/docker/docker/client"
@@ -112,4 +114,163 @@ func (is *AnalyticsServices) GetTotalUsage() (dto.UsageDTO, error) {
 	}
 
 	return result, nil
+}
+
+func (is *AnalyticsServices) GetContainersCpuUsage() (dto.ContainersCpuUsageDTO, error) {
+	containers, err := is.cli.ContainerList(context.Background(), container.ListOptions{All: true})
+	if err != nil {
+		return dto.ContainersCpuUsageDTO{}, err
+	}
+
+	var mostUsageContainer dto.ContainerCpuUsageDTO
+	var leastUsageContainer dto.ContainerCpuUsageDTO
+	var restUsageContainer []dto.ContainerCpuUsageDTO
+
+	for _, container := range containers {
+		statsResponse, err := is.cli.ContainerStats(context.Background(), container.ID, false)
+		if err != nil {
+			return dto.ContainersCpuUsageDTO{}, err
+		}
+		defer statsResponse.Body.Close()
+
+		var stats *types.StatsJSON
+		dec := json.NewDecoder(statsResponse.Body)
+		if err := dec.Decode(&stats); err != nil {
+			return dto.ContainersCpuUsageDTO{}, err
+		}
+
+		cpuDelta := float64(stats.CPUStats.CPUUsage.TotalUsage) - float64(stats.PreCPUStats.CPUUsage.TotalUsage)
+		systemDelta := float64(stats.CPUStats.SystemUsage) - float64(stats.PreCPUStats.SystemUsage)
+		numberOfCores := float64(stats.CPUStats.OnlineCPUs)
+
+		cpuPercentage := (cpuDelta / systemDelta) * numberOfCores * 100.0
+
+		containerCpuUsage := dto.ContainerCpuUsageDTO{
+			ContainerName: container.Names[0],
+			CpuUsage:      cpuPercentage,
+		}
+
+		if mostUsageContainer.ContainerName == "" {
+			mostUsageContainer = containerCpuUsage
+			leastUsageContainer = containerCpuUsage
+		} else if mostUsageContainer.CpuUsage < containerCpuUsage.CpuUsage {
+			mostUsageContainer = containerCpuUsage
+		} else if leastUsageContainer.CpuUsage > containerCpuUsage.CpuUsage {
+			leastUsageContainer = containerCpuUsage
+		} else {
+			restUsageContainer = append(restUsageContainer, containerCpuUsage)
+		}
+	}
+
+	return dto.ContainersCpuUsageDTO{
+		MostUsageContainer:  mostUsageContainer,
+		LeastUsageContainer: leastUsageContainer,
+		RestUsageContainer:  restUsageContainer,
+	}, nil
+}
+
+func (is *AnalyticsServices) GetContainersMemoryUsage() (dto.ContainersMemoryUsageDTO, error) {
+	containers, err := is.cli.ContainerList(context.Background(), container.ListOptions{All: true})
+	if err != nil {
+		return dto.ContainersMemoryUsageDTO{}, err
+	}
+
+	var mostUsageContainer dto.ContainerMemoryUsageDTO
+	var leastUsageContainer dto.ContainerMemoryUsageDTO
+	var restUsageContainer []dto.ContainerMemoryUsageDTO
+
+	for _, container := range containers {
+		statsResponse, err := is.cli.ContainerStats(context.Background(), container.ID, false)
+		if err != nil {
+			return dto.ContainersMemoryUsageDTO{}, err
+		}
+		defer statsResponse.Body.Close()
+
+		var stats *types.StatsJSON
+		dec := json.NewDecoder(statsResponse.Body)
+		if err := dec.Decode(&stats); err != nil {
+			return dto.ContainersMemoryUsageDTO{}, err
+		}
+
+		memoryUsageMB := float64(stats.MemoryStats.Usage / 1024 / 1024)
+		memoryLimitMB := float64(stats.MemoryStats.Limit / 1024 / 1024)
+
+		memoryUsagePercentage := (memoryUsageMB / memoryLimitMB) * 100
+
+		containerMemoryUsage := dto.ContainerMemoryUsageDTO{
+			ContainerName: container.Names[0],
+			MemoryUsage:   memoryUsagePercentage,
+		}
+
+		if mostUsageContainer.ContainerName == "" {
+			mostUsageContainer = containerMemoryUsage
+			leastUsageContainer = containerMemoryUsage
+		} else if mostUsageContainer.MemoryUsage < containerMemoryUsage.MemoryUsage {
+			mostUsageContainer = containerMemoryUsage
+		} else if leastUsageContainer.MemoryUsage > containerMemoryUsage.MemoryUsage {
+			leastUsageContainer = containerMemoryUsage
+		} else {
+			restUsageContainer = append(restUsageContainer, containerMemoryUsage)
+		}
+	}
+
+	return dto.ContainersMemoryUsageDTO{
+		MostUsageContainer:  mostUsageContainer,
+		LeastUsageContainer: leastUsageContainer,
+		RestUsageContainer:  restUsageContainer,
+	}, nil
+}
+
+func (is *AnalyticsServices) GetContainersNetworkUsage() (dto.ContainersNetworkUsageDTO, error) {
+	containers, err := is.cli.ContainerList(context.Background(), container.ListOptions{All: true})
+	if err != nil {
+		return dto.ContainersNetworkUsageDTO{}, err
+	}
+
+	var totalReceived float64
+	var totalSent float64
+	var inPackets uint64
+	var outPackets uint64
+	var receivedErrors uint64
+	var sentErrors uint64
+	var inPacketsDropped uint64
+	var outPacketsDropped uint64
+
+	for _, container := range containers {
+		statsResponse, err := is.cli.ContainerStats(context.Background(), container.ID, false)
+		if err != nil {
+			return dto.ContainersNetworkUsageDTO{}, err
+		}
+		defer statsResponse.Body.Close()
+
+		var stats *types.StatsJSON
+		dec := json.NewDecoder(statsResponse.Body)
+		if err := dec.Decode(&stats); err != nil {
+			return dto.ContainersNetworkUsageDTO{}, err
+		}
+
+		networks := stats.Networks
+
+		for _, network := range networks {
+			totalReceived += float64(network.RxBytes)
+			totalSent += float64(network.TxBytes)
+			inPackets += network.RxPackets
+			outPackets += network.TxPackets
+			receivedErrors += network.RxErrors
+			sentErrors += network.TxErrors
+			inPacketsDropped += network.RxDropped
+			outPacketsDropped += network.TxDropped
+		}
+	}
+
+	return dto.ContainersNetworkUsageDTO{
+		TotalReceived:     totalReceived / 1024 / 1024,
+		TotalSent:         totalSent / 1024 / 1024,
+		InPackets:         inPackets,
+		OutPackets:        outPackets,
+		ReceivedErrors:    receivedErrors,
+		SentErrors:        sentErrors,
+		InPacketsDropped:  inPacketsDropped,
+		OutPacketsDropped: outPacketsDropped,
+	}, nil
 }

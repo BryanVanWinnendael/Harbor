@@ -46,4 +46,7 @@ func SetupRoutes(e *echo.Echo, ah *AuthHandler, ch *ContainerHandler, ih *ImageH
 
 	protectedGroup.GET("analytics", anh.getAnalyticsPage)
 	protectedGroup.GET("analytics/usage", anh.getUsage)
+	protectedGroup.GET("analytics/cpu", anh.getContainersCpuUsage)
+	protectedGroup.GET("analytics/memory", anh.getContainersMemoryUsage)
+	protectedGroup.GET("analytics/network", anh.getContainersNetworkUsage)
 }

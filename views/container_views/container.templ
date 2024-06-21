@@ -16,7 +16,7 @@ templ Container(container types.ContainerJSON, publicURLs [][]string) {
 			</div>
 			<div
 				hx-get={ "/containers/" + container.ID + "/status" }
-				hx-trigger="load, every 1s"
+				hx-trigger="load, every 5s"
 				hx-swap="innerHTML"
 				class="flex items-center"
 			>
