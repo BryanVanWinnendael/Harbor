@@ -25,6 +25,15 @@ SECRET_KEY="secretkey"
 
 For the SECRET_KEY any value will do. This value will be used by the cookieStore.
 
+
+## Authentication
+When using Harbor for the first time the default login will be:
+```json
+user: admin
+password: admin
+```
+After the first login a promt will show to change the password.
+
 ## Run with docker
 
 ### Requirements
