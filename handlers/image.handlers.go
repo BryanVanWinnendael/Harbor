@@ -3,7 +3,6 @@ package handlers
 import (
 	"net/http"
 
-	"github.com/BryanVanWinnendael/Harbor/views/container_views"
 	"github.com/BryanVanWinnendael/Harbor/views/image_views"
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/image"
@@ -45,8 +44,7 @@ func (is *ImageHandler) listImages(c echo.Context) error {
 		setFlashmessages(c, "error", "Failed to get images")
 		return c.Redirect(http.StatusSeeOther, "/")
 	}
-
-	return renderView(c, container_views.ContainerIndex(
+	return renderView(c, image_views.ImageIndex(
 		"Images |",
 		fromProtected,
 		isError,

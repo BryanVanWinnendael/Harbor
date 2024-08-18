@@ -27,6 +27,12 @@ type ImageServices struct {
 func (is *ImageServices) GetImages() ([]image.Summary, error) {
 	images, err := is.cli.ImageList(context.Background(), image.ListOptions{})
 
+	for i := range images {
+		if len(images[i].RepoTags) == 0 {
+			images[i].RepoTags = []string{"<none>"}
+		}
+	}
+
 	if err != nil {
 		return nil, err
 	}
