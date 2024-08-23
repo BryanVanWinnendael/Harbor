@@ -4,34 +4,38 @@ import (
 	"github.com/BryanVanWinnendael/Harbor/dto"
 )
 
-templ AnalyticsUsage(usage dto.UsageDTO) {
+templ AnalyticsUsage(usage dto.UsageDTO, loading bool) {
 	<div class="h-full w-full p-4 flex flex-col">
 		<h3 class="scroll-m-20 text-2xl font-semibold tracking-tight">Usage</h3>
-		<div class="grid grid-cols-2 gap-4 mt-2 overflow-scroll">
-			<div class="flex flex-col gap-1">
-				<p class="text-gray-400">Images</p>
-				<p>{ usage.Images[0].(string) }MB</p>
+		if loading {
+			<p class="text-gray-300">Loading data</p>
+		} else {
+			<div class="grid grid-cols-2 gap-4 mt-2 overflow-scroll">
+				<div class="flex flex-col gap-1">
+					<p class="text-gray-400">Images</p>
+					<p>{ usage.Images[0].(string) }MB</p>
+				</div>
+				<div class="flex flex-col gap-1">
+					<p class="text-gray-400">Containers</p>
+					<p>{ usage.Containers[0].(string) }MB</p>
+				</div>
+				<div class="flex flex-col gap-1">
+					<p class="text-gray-400">Volumes</p>
+					<p>{ usage.Volumes[0].(string) }MB</p>
+				</div>
+				<div class="flex flex-col gap-1">
+					<p class="text-gray-400">Build Cache</p>
+					<p>{ usage.BuildCache[0].(string) }MB</p>
+				</div>
+				<div class="flex flex-col gap-1">
+					<p class="text-gray-400">Total Usage (MB)</p>
+					<p>{ usage.TotalUsage }MB</p>
+				</div>
+				<div class="flex flex-col gap-1">
+					<p class="text-gray-400">Total Usage (%)</p>
+					<p>{ usage.UsagePercent }%</p>
+				</div>
 			</div>
-			<div class="flex flex-col gap-1">
-				<p class="text-gray-400">Containers</p>
-				<p>{ usage.Containers[0].(string) }MB</p>
-			</div>
-			<div class="flex flex-col gap-1">
-				<p class="text-gray-400">Volumes</p>
-				<p>{ usage.Volumes[0].(string) }MB</p>
-			</div>
-			<div class="flex flex-col gap-1">
-				<p class="text-gray-400">Build Cache</p>
-				<p>{ usage.BuildCache[0].(string) }MB</p>
-			</div>
-			<div class="flex flex-col gap-1">
-				<p class="text-gray-400">Total Usage (MB)</p>
-				<p>{ usage.TotalUsage }MB</p>
-			</div>
-			<div class="flex flex-col gap-1">
-				<p class="text-gray-400">Total Usage (%)</p>
-				<p>{ usage.UsagePercent }%</p>
-			</div>
-		</div>
+		}
 	</div>
 }

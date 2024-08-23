@@ -5,31 +5,35 @@ import (
 	"fmt"
 )
 
-templ AnalyticsMemoryUsage(usage dto.ContainersMemoryUsageDTO) {
+templ AnalyticsMemoryUsage(usage dto.ContainersMemoryUsageDTO, loading bool) {
 	<div class="h-full w-full p-4 flex flex-col">
 		<h3 class="scroll-m-20 text-2xl font-semibold tracking-tight">Memory Usage</h3>
-		<div class="flex gap-2 mt-2 overflow-scroll">
-			<div class="flex flex-col gap-1">
-				<p class="text-gray-400">Most Usage</p>
-				<p class="font-semibold">{ usage.MostUsageContainer.ContainerName }</p>
-				<p class="text-red-300">{ fmt.Sprintf("%f", usage.MostUsageContainer.MemoryUsage) }%</p>
+		if loading {
+			<p class="text-gray-300">Loading data</p>
+		} else {
+			<div class="flex gap-2 mt-2 overflow-scroll">
+				<div class="flex flex-col gap-1">
+					<p class="text-gray-400">Most Usage</p>
+					<p class="font-semibold">{ usage.MostUsageContainer.ContainerName }</p>
+					<p class="text-red-300">{ fmt.Sprintf("%f", usage.MostUsageContainer.MemoryUsage) }%</p>
+				</div>
+				<div class="flex flex-col gap-1">
+					<p class="text-gray-400">Least Usage</p>
+					<p class="font-semibold">{ usage.LeastUsageContainer.ContainerName }</p>
+					<p class="text-green-300">{ fmt.Sprintf("%f", usage.LeastUsageContainer.MemoryUsage) }%</p>
+				</div>
 			</div>
-			<div class="flex flex-col gap-1">
-				<p class="text-gray-400">Least Usage</p>
-				<p class="font-semibold">{ usage.LeastUsageContainer.ContainerName }</p>
-				<p class="text-green-300">{ fmt.Sprintf("%f", usage.LeastUsageContainer.MemoryUsage) }%</p>
+			<div class="mt-2 overflow-scroll">
+				<p class="text-gray-400">Others</p>
+				<div class="flex gap-2 mt-2 ">
+					for _, container := range usage.RestUsageContainer {
+						<div class="w-full h-full flex flex-col gap-1 border border-neutral-800/50 rounded-lg bg-black p-2">
+							<p class="font-semibold">{ container.ContainerName }</p>
+							<p class="text-gray-300">{ fmt.Sprintf("%f", container.MemoryUsage) }%</p>
+						</div>
+					}
+				</div>
 			</div>
-		</div>
-		<div class="mt-2 overflow-scroll">
-			<p class="text-gray-400">Others</p>
-			<div class="flex gap-2 mt-2 ">
-				for _, container := range usage.RestUsageContainer {
-					<div class="w-full h-full flex flex-col gap-1 border border-neutral-800/50 rounded-lg bg-black p-2">
-						<p class="font-semibold">{ container.ContainerName }</p>
-						<p class="text-gray-300">{ fmt.Sprintf("%f", container.MemoryUsage) }%</p>
-					</div>
-				}
-			</div>
-		</div>
+		}
 	</div>
 }

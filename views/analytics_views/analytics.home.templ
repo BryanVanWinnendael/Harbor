@@ -1,4 +1,7 @@
 package analytics_views 
+import (
+	"github.com/BryanVanWinnendael/Harbor/dto"
+)
 
 templ AnalyticsHome() {
 	<section class="w-full flex flex-col gap-2 h-full overflow-hidden">
@@ -14,25 +17,25 @@ templ AnalyticsHome() {
 				hx-trigger="load, every 15s"
 				hx-swap="#innerHTML"
 				class="border border-neutral-800/50 rounded-lg h-full w-full bg-[#0b0b0b] col-start-1"
-			></div>
+			>@AnalyticsUsage(dto.UsageDTO{}, true)</div>
 			<div
 				hx-get="/analytics/cpu"
 				hx-trigger="load, every 15s"
 				hx-swap="#innerHTML"
 				class="border border-neutral-800/50 rounded-lg h-full w-full bg-[#0b0b0b] col-start-2 col-span-3"
-			></div>
+			>@AnalyticsCpuUsage(dto.ContainersCpuUsageDTO{}, true)</div>
 			<div
 				hx-get="/analytics/memory"
 				hx-trigger="load, every 15s"
 				hx-swap="#innerHTML"
 				class="border border-neutral-800/50 rounded-lg h-full w-full bg-[#0b0b0b] row-start-2 col-span-2"
-			></div>
+			>@AnalyticsMemoryUsage(dto.ContainersMemoryUsageDTO{}, true)</div>
 			<div
 				hx-get="/analytics/network"
-				hx-trigger="load, every 1111115s"
+				hx-trigger="load, every 15s"
 				hx-swap="#innerHTML"
 				class="border border-neutral-800/50 rounded-lg h-full w-full bg-[#0b0b0b] row-start-2 col-span-3"
-			></div>
+			>@AnalyticsNetworkUsage(dto.ContainersNetworkUsageDTO{}, true)</div>
 		</div>
 	</section>
 }

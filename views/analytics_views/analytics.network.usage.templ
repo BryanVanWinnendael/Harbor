@@ -5,42 +5,46 @@ import (
 	"fmt"
 )
 
-templ AnalyticsNetworkUsage(usage dto.ContainersNetworkUsageDTO) {
+templ AnalyticsNetworkUsage(usage dto.ContainersNetworkUsageDTO, loading bool) {
 	<div class="h-full w-full p-4 flex flex-col">
 		<h3 class="scroll-m-20 text-2xl font-semibold tracking-tight">Network Usage</h3>
-		<div class="grid grid-cols-2 gap-4 mt-2 h-full w-full overflow-scroll">
-			<div class="flex flex-col gap-1">
-				<p class="text-gray-400">Sent</p>
-				<p>{ fmt.Sprintf("%.4v", usage.TotalSent) }MB</p>
+		if loading {
+			<p class="text-gray-300">Loading data</p>
+		} else {
+			<div class="grid grid-cols-2 gap-4 mt-2 h-full w-full overflow-scroll">
+				<div class="flex flex-col gap-1">
+					<p class="text-gray-400">Sent</p>
+					<p>{ fmt.Sprintf("%.4v", usage.TotalSent) }MB</p>
+				</div>
+				<div class="flex flex-col gap-1">
+					<p class="text-gray-400">Received</p>
+					<p>{ fmt.Sprintf("%.4v", usage.TotalReceived) }MB</p>
+				</div>
+				<div class="flex flex-col gap-1">
+					<p class="text-gray-400">Packets Received</p>
+					<p>{ fmt.Sprintf("%v", usage.InPackets) }</p>
+				</div>
+				<div class="flex flex-col gap-1">
+					<p class="text-gray-400">Packets Sent</p>
+					<p>{ fmt.Sprintf("%v", usage.OutPackets) }</p>
+				</div>
+				<div class="flex flex-col gap-1">
+					<p class="text-gray-400">Received Errors</p>
+					<p>{ fmt.Sprintf("%v", usage.ReceivedErrors) }</p>
+				</div>
+				<div class="flex flex-col gap-1">
+					<p class="text-gray-400">Sent Errors</p>
+					<p>{ fmt.Sprintf("%v", usage.SentErrors) }</p>
+				</div>
+				<div class="flex flex-col gap-1">
+					<p class="text-gray-400">Incomming Packets Dropped</p>
+					<p>{ fmt.Sprintf("%v", usage.InPacketsDropped) }</p>
+				</div>
+				<div class="flex flex-col gap-1">
+					<p class="text-gray-400">Outgoing Packets Dropped</p>
+					<p>{ fmt.Sprintf("%v", usage.OutPacketsDropped) }</p>
+				</div>
 			</div>
-			<div class="flex flex-col gap-1">
-				<p class="text-gray-400">Received</p>
-				<p>{ fmt.Sprintf("%.4v", usage.TotalReceived) }MB</p>
-			</div>
-			<div class="flex flex-col gap-1">
-				<p class="text-gray-400">Packets Received</p>
-				<p>{ fmt.Sprintf("%v", usage.InPackets) }</p>
-			</div>
-			<div class="flex flex-col gap-1">
-				<p class="text-gray-400">Packets Sent</p>
-				<p>{ fmt.Sprintf("%v", usage.OutPackets) }</p>
-			</div>
-			<div class="flex flex-col gap-1">
-				<p class="text-gray-400">Received Errors</p>
-				<p>{ fmt.Sprintf("%v", usage.ReceivedErrors) }</p>
-			</div>
-			<div class="flex flex-col gap-1">
-				<p class="text-gray-400">Sent Errors</p>
-				<p>{ fmt.Sprintf("%v", usage.SentErrors) }</p>
-			</div>
-			<div class="flex flex-col gap-1">
-				<p class="text-gray-400">Incomming Packets Dropped</p>
-				<p>{ fmt.Sprintf("%v", usage.InPacketsDropped) }</p>
-			</div>
-			<div class="flex flex-col gap-1">
-				<p class="text-gray-400">Outgoing Packets Dropped</p>
-				<p>{ fmt.Sprintf("%v", usage.OutPacketsDropped) }</p>
-			</div>
-		</div>
+		}
 	</div>
 }

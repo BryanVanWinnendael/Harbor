@@ -42,7 +42,7 @@ func (is *AnalyticsHandler) getUsage(c echo.Context) error {
 		})
 	}
 
-	return renderView(c, analytics_views.AnalyticsUsage(usage))
+	return renderView(c, analytics_views.AnalyticsUsage(usage, false))
 }
 
 func (is *AnalyticsHandler) getContainersCpuUsage(c echo.Context) error {
@@ -53,7 +53,7 @@ func (is *AnalyticsHandler) getContainersCpuUsage(c echo.Context) error {
 		})
 	}
 
-	return renderView(c, analytics_views.AnalyticsCpuUsage(usage))
+	return renderView(c, analytics_views.AnalyticsCpuUsage(usage, false))
 }
 
 func (is *AnalyticsHandler) getContainersMemoryUsage(c echo.Context) error {
@@ -64,7 +64,7 @@ func (is *AnalyticsHandler) getContainersMemoryUsage(c echo.Context) error {
 		})
 	}
 
-	return renderView(c, analytics_views.AnalyticsMemoryUsage(usage))
+	return renderView(c, analytics_views.AnalyticsMemoryUsage(usage, false))
 }
 
 func (is *AnalyticsHandler) getContainersNetworkUsage(c echo.Context) error {
@@ -75,5 +75,5 @@ func (is *AnalyticsHandler) getContainersNetworkUsage(c echo.Context) error {
 		})
 	}
 
-	return renderView(c, analytics_views.AnalyticsNetworkUsage(usage))
+	return renderView(c, analytics_views.AnalyticsNetworkUsage(usage, false))
 }
