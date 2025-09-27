@@ -42,10 +42,7 @@ type ContainerHandler struct {
 }
 
 func (cs *ContainerHandler) getContainers(c echo.Context) error {
-	containers, err := cs.ContainerServices.GetContainers()
-	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to get containers"})
-	}
+	containers, _ := cs.ContainerServices.GetContainers()
 
 	return renderView(c, container_views.ContainerTable(containers))
 }
@@ -53,12 +50,7 @@ func (cs *ContainerHandler) getContainers(c echo.Context) error {
 func (cs *ContainerHandler) listContainers(c echo.Context) error {
 	isError = false
 
-	containers, err := cs.ContainerServices.GetContainers()
-	if err != nil {
-		isError = true
-		setFlashmessages(c, "error", "Failed to get containers")
-		return c.Redirect(http.StatusSeeOther, "/")
-	}
+	containers, _ := cs.ContainerServices.GetContainers()
 
 	return renderView(c, container_views.ContainerIndex(
 		"Containers |",
@@ -92,10 +84,7 @@ func (cs *ContainerHandler) getContainer(c echo.Context) error {
 func (cs *ContainerHandler) getContainerStatus(c echo.Context) error {
 	id := c.Param("id")
 
-	container, _, err := cs.ContainerServices.GetContainer(id)
-	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to get container"})
-	}
+	container, _, _ := cs.ContainerServices.GetContainer(id)
 
 	return renderView(c, container_views.ContainerStatus(container.State.Status))
 }
@@ -103,11 +92,7 @@ func (cs *ContainerHandler) getContainerStatus(c echo.Context) error {
 func (cs *ContainerHandler) getContainerLogs(c echo.Context) error {
 	id := c.Param("id")
 
-	logs, err := cs.ContainerServices.GetContainerLogs(id)
-	if err != nil {
-		setFlashmessages(c, "error", "Failed to get container logs")
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to get container logs"})
-	}
+	logs, _ := cs.ContainerServices.GetContainerLogs(id)
 	return renderView(c, container_views.ContainerLogs(logs))
 }
 

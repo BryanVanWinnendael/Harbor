@@ -49,8 +49,22 @@ docker compose up -d
 
 ### Requirements
 - [Go](https://go.dev/doc/install)
-- [Air](https://github.com/cosmtrek/air)
 
+
+#### Install dependencies
+``` bash
+make get-install-air
+```
+
+``` bash
+make go-install-templ
+```
+
+``` bash
+make get-install-tailwindcss ## Installs the tailwindcss-linux-x64 cli
+or
+make get-install-tailwindcss-arm ## Installs the tailwindcss-linux-arm64 cli
+```
 
 ### Windows/Linux/MacOS
 In the .air.toml file change the "./tmp/main" to "./tmp/main.exe" for windows, for Linux and MacOS no changes have to be made.
@@ -62,11 +76,8 @@ air
 
 ## Making changes
 
-### Requirements
-- [Tailwind CSS CLI](https://tailwindcss.com/docs/installation)
-
 ### Tailwind CSS
 When making changes to the code with tailwind make sure to run.
 ```bash
-tailwindcss -i css/input.css -o css/output.css --watch
+./tailwindcss -i css/input.css -o css/output.css --watch
 ```

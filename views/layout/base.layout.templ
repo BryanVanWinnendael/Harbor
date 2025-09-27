@@ -3,48 +3,224 @@ package layout
 import "github.com/BryanVanWinnendael/Harbor/views/partials"
 
 templ Base(title string, fromProtected, isError bool, errMsgs, sucMsgs []string) {
-	<!DOCTYPE html>
-	<html lang="en">
-		<head>
-			<meta charset="UTF-8"/>
-			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-			<meta
-				name="description"
-				content=""
-			/>
-			<meta name="google" content="notranslate"/>
-			<link rel="shortcut icon" href="/static/img/favicon.ico" type="ico"/>
-			<link rel="stylesheet" href="/css/output.css"/>
-			<title>{ title } Harbor</title>
-			<script src="https://unpkg.com/htmx.org@1.9.9" integrity="sha384-QFjmbokDn2DjBjq+fM+8LUIVrAgqcNW2s0PjAxHETgRn9l4fvX31ZxDxvwQnyMOX" crossorigin="anonymous"></script>
-			<script src="https://unpkg.com/hyperscript.org@0.9.12"></script>
-			<script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
-		</head>
-		<body class="sample-transition flex h-screen bg-black text-white" hx-boost="true">
-			<main class="w-full flex flex-col gap-4 h-full px-4 py-4 overflow-hidden">
-				<div class="flex gap-2 items-center w-full">
-					<svg fill="white" width="24" height="24" viewBox="0 0 15 15" version="1.1" id="harbor" xmlns="http://www.w3.org/2000/svg">
-						<path
-							id="path5263"
-							d="M7.5,0C5.5,0,4,1.567,4,3.5c0.0024,1.5629,1.0397,2.902,2.5,3.3379v6.0391
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta name="description" content="" />
+	<meta name="google" content="notranslate" />
+	<link rel="shortcut icon" href="/static/img/favicon.ico" type="ico" />
+	<link rel="stylesheet" href="/css/output.css" />
+	<title>{ title } Harbor</title>
+	<script src="https://unpkg.com/htmx.org@1.9.9"
+		integrity="sha384-QFjmbokDn2DjBjq+fM+8LUIVrAgqcNW2s0PjAxHETgRn9l4fvX31ZxDxvwQnyMOX"
+		crossorigin="anonymous"></script>
+	<script src="https://unpkg.com/hyperscript.org@0.9.12"></script>
+	<script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</head>
+
+<body class="sample-transition flex h-screen bg-black text-white" hx-boost="true">
+	<main class="w-full flex flex-col gap-4 h-full px-4 py-4 overflow-hidden">
+		<div class="flex gap-2 items-center w-full">
+			<svg fill="white" width="24" height="24" viewBox="0 0 15 15" version="1.1" id="harbor"
+				xmlns="http://www.w3.org/2000/svg">
+				<path id="path5263" d="M7.5,0C5.5,0,4,1.567,4,3.5c0.0024,1.5629,1.0397,2.902,2.5,3.3379v6.0391
 	c-0.9305-0.1647-1.8755-0.5496-2.6484-1.2695C2.7992,10.6273,2.002,9.0676,2.002,6.498c0.0077-0.5646-0.4531-1.0236-1.0176-1.0137
 	C0.4329,5.493-0.0076,5.9465,0,6.498c0,3.0029,1.0119,5.1955,2.4902,6.5723C3.9685,14.4471,5.8379,15,7.5,15
 	c1.6656,0,3.535-0.5596,5.0117-1.9395S14.998,9.4868,14.998,6.498c0.0648-1.3953-2.0628-1.3953-1.998,0
 	c0,2.553-0.7997,4.1149-1.8535,5.0996C10.3731,12.3203,9.4288,12.7084,8.5,12.875V6.8418C9.9607,6.4058,10.9986,5.0642,11,3.5
-	C11,1.567,9.5,0,7.5,0z M7.5,2C8.3284,2,9,2.6716,9,3.5S8.3284,5,7.5,5S6,4.3284,6,3.5S6.6716,2,7.5,2z"
-						></path>
-					</svg>
-					<h1 class="text-4xl font-extrabold tracking-tight lg:text-5xl">Harbor</h1>
-				</div>
-				{ children... }
-				@partials.FlashMessages(errMsgs, sucMsgs)
-			</main>
-			<script src="https://unpkg.com/@material-tailwind/html@latest/scripts/dialog.js"></script>
-			<link
-				rel="stylesheet"
-				href="https://unpkg.com/@material-tailwind/html@latest/styles/material-tailwind.css"
-			/>
-			<script src="https://unpkg.com/@themesberg/flowbite@latest/dist/flowbite.bundle.js"></script>
-		</body>
-	</html>
+	C11,1.567,9.5,0,7.5,0z M7.5,2C8.3284,2,9,2.6716,9,3.5S8.3284,5,7.5,5S6,4.3284,6,3.5S6.6716,2,7.5,2z"></path>
+			</svg>
+			<h1 class="text-4xl font-extrabold tracking-tight lg:text-5xl">Harbor</h1>
+		</div>
+		{ children... }
+		@partials.FlashMessages(errMsgs, sucMsgs)
+	</main>
+	<script>
+		/*
+			Universal dialog manager (HTMX-safe, delegation-based).
+		
+			- Supports elements using:
+					data-dialog-target="ID"             <-- open button
+					data-dialog-backdrop="ID"           <-- backdrop element (may be pointer-events-none/hidden etc)
+					data-dialog="ID"                    <-- dialog panel element inside (optional)
+					data-dialog-backdrop-close="true"   <-- backdrop click closes
+					data-dialog-close="ID|true"         <-- close button (if value is ID, will use that; else finds backdrop ancestor)
+			- Works after HTMX swaps because listeners are delegated at document level.
+			- Place this once in your base layout (before </body>).
+		*/
+
+		(function () {
+			const log = (...args) => {
+				// comment out next line to silence logs
+				// console.debug('[dialog-manager]', ...args);
+			};
+
+			function getBackdrop(id) {
+				return document.querySelector(`[data-dialog-backdrop="${id}"]`);
+			}
+			function getDialog(id) {
+				return document.querySelector(`[data-dialog="${id}"]`) || (getBackdrop(id) && getBackdrop(id).querySelector(`[data-dialog="${id}"]`));
+			}
+
+			function openById(id) {
+				if (!id) return;
+				const backdrop = getBackdrop(id);
+				const dialog = getDialog(id);
+
+				if (!backdrop) {
+					console.warn('[dialog-manager] no backdrop for id:', id);
+					return;
+				}
+
+				// Remove hidden/pointer blocking classes
+				backdrop.classList.remove('hidden', 'pointer-events-none', 'opacity-0', 'invisible');
+
+				// Show dialog element with transitions if present
+				if (dialog) {
+					dialog.classList.remove('opacity-0', 'scale-95', 'invisible');
+					dialog.classList.add('opacity-100', 'scale-100');
+				}
+
+				// move focus to first focusable inside (accessibility)
+				setTimeout(() => {
+					const focusable = backdrop.querySelector('input,button,textarea,select,[tabindex]:not([tabindex="-1"])');
+					if (focusable) focusable.focus();
+				}, 50);
+
+				log('opened', id);
+			}
+
+			function closeById(id) {
+				if (!id) return;
+				const backdrop = getBackdrop(id);
+				const dialog = getDialog(id);
+
+				if (!backdrop) {
+					console.warn('[dialog-manager] no backdrop to close for id:', id);
+					return;
+				}
+
+				// reverse transition classes
+				if (dialog) {
+					dialog.classList.add('opacity-0', 'scale-95');
+					dialog.classList.remove('opacity-100', 'scale-100');
+				}
+
+				// hide backdrop after transition (200ms)
+				setTimeout(() => {
+					backdrop.classList.add('hidden', 'pointer-events-none', 'opacity-0');
+				}, 200);
+
+				log('closed', id);
+			}
+
+			// Global click delegation
+			document.addEventListener('click', function (e) {
+				// 1) open button: [data-dialog-target]
+				const openBtn = e.target.closest('[data-dialog-target]');
+				if (openBtn) {
+					e.preventDefault();
+					const id = openBtn.getAttribute('data-dialog-target');
+					openById(id);
+					return;
+				}
+
+				// 2) explicit close buttons: [data-dialog-close]
+				const closeBtn = e.target.closest('[data-dialog-close]');
+				if (closeBtn) {
+					e.preventDefault();
+					// value may be the id or just 'true' — try both
+					const value = closeBtn.getAttribute('data-dialog-close');
+					let id = null;
+
+					if (value && value.trim() && value !== 'true') {
+						id = value;
+					} else {
+						// find nearest ancestor backdrop
+						const backdropAncestor = closeBtn.closest('[data-dialog-backdrop]');
+						if (backdropAncestor) id = backdropAncestor.getAttribute('data-dialog-backdrop');
+					}
+
+					if (id) closeById(id);
+					return;
+				}
+
+				// 3) backdrop click (click on backdrop itself)
+				const backdropEl = e.target.closest('[data-dialog-backdrop]');
+				if (backdropEl && e.target === backdropEl) {
+					const shouldClose = backdropEl.getAttribute('data-dialog-backdrop-close') === 'true';
+					if (shouldClose) {
+						const id = backdropEl.getAttribute('data-dialog-backdrop');
+						closeById(id);
+					}
+					return;
+				}
+			});
+
+			// Escape key closes any open modals whose backdrop has data-dialog-backdrop-close="true"
+			document.addEventListener('keydown', function (e) {
+				if (e.key !== 'Escape') return;
+				document.querySelectorAll('[data-dialog-backdrop]').forEach(backdrop => {
+					if (backdrop.classList.contains('hidden')) return;
+					if (backdrop.getAttribute('data-dialog-backdrop-close') === 'true') {
+						const id = backdrop.getAttribute('data-dialog-backdrop');
+						closeById(id);
+					}
+				});
+			});
+
+			// HTMX event: optional debug rebind hook (not strictly needed because we use delegation)
+			document.body.addEventListener('htmx:afterSwap', function () {
+				log('htmx:afterSwap fired — dialog manager remains active (delegation).');
+			});
+
+			// initial log to confirm script loaded
+			log('dialog-manager initialized');
+		})();
+
+		// Dropdown manager (HTMX-safe)
+		function setupDropdown(button, menu) {
+			if (!button || !menu) return;
+
+			button.addEventListener("click", (e) => {
+				e.stopPropagation();
+				menu.classList.toggle("hidden");
+
+				const rect = button.getBoundingClientRect();
+				menu.style.position = "fixed";
+				menu.style.top = rect.bottom + "px";
+				menu.style.left = rect.left + "px";
+			});
+
+			document.addEventListener("click", (e) => {
+				if (!button.contains(e.target) && !menu.contains(e.target)) {
+					menu.classList.add("hidden");
+				}
+			});
+		}
+
+		function initDropdowns() {
+			document.querySelectorAll('[data-dropdown-button]').forEach(button => {
+				const menuId = button.getAttribute('data-dropdown-target');
+				const menu = document.getElementById(menuId);
+				if (!menu._bound) { // avoid double-binding
+					setupDropdown(button, menu);
+					menu._bound = true;
+				}
+			});
+		}
+
+		// Initial page load
+		document.addEventListener("DOMContentLoaded", initDropdowns);
+
+		// HTMX swaps
+		document.body.addEventListener("htmx:afterSwap", initDropdowns);
+	</script>
+
+</body>
+
+</html>
 }

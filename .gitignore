@@ -2,3 +2,4 @@ app_data.db
 tmp/
 .env
 views/**/*.go
+tailwindcss

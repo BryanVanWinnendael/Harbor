@@ -5,47 +5,34 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-// cookie name & flash messages key
-// this should be a .env file
 const (
-	session_name              string = "fmessages"
-	session_flashmessages_key string = "flashmessages-key"
+	sessionName     = "fmessages"
+	sessionFlashKey = "flashmessages-key"
 )
 
+// cookie store
 func getCookieStore() *sessions.CookieStore {
-
-	return sessions.NewCookieStore([]byte(session_flashmessages_key))
+	return sessions.NewCookieStore([]byte(sessionFlashKey))
 }
 
-// Set adds a new message to the cookie store
-func setFlashmessages(c echo.Context, kind, value string) {
-	session, _ := getCookieStore().Get(c.Request(), session_name)
-
-	session.AddFlash(value, kind)
-
+// SetFlash adds a flash message to the session
+func setFlashmessages(c echo.Context, kind, message string) {
+	session, _ := getCookieStore().Get(c.Request(), sessionName)
+	session.AddFlash(message, kind)
 	session.Save(c.Request(), c.Response())
 }
 
-// Get receives flash messages from cookie store
+// GetFlash retrieves flash messages for a kind
 func getFlashmessages(c echo.Context, kind string) []string {
-	session, _ := getCookieStore().Get(c.Request(), session_name)
-
-	fm := session.Flashes(kind)
-
-	// if there are some messages…
-	if len(fm) > 0 {
+	session, _ := getCookieStore().Get(c.Request(), sessionName)
+	flashes := session.Flashes(kind)
+	if len(flashes) > 0 {
 		session.Save(c.Request(), c.Response())
-
-		// we start an empty strings slice that we
-		// then return with messages
-		var flashes []string
-		for _, fl := range fm {
-			// we add the messages to the slice
-			flashes = append(flashes, fl.(string))
+		result := []string{}
+		for _, f := range flashes {
+			result = append(result, f.(string))
 		}
-
-		return flashes
+		return result
 	}
-
 	return nil
 }
