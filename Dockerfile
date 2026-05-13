@@ -1,19 +1,19 @@
-FROM golang:1.22.4 AS builder
-
-WORKDIR /app
-
-RUN go install github.com/air-verse/air@v1.52.2
-RUN go install github.com/a-h/templ/cmd/templ@v0.2.707
-
-
-FROM golang:1.22.4
-
-COPY --from=builder /go/bin/air /usr/local/bin/air
-COPY --from=builder /go/bin/templ /usr/local/bin/templ
+FROM golang:1.22.4-alpine AS builder
 
 WORKDIR /app
 
 COPY go.mod go.sum ./
 RUN go mod download
 
-CMD ["air"]
+COPY api-gateway ./api-gateway
+COPY shared ./shared
+
+RUN CGO_ENABLED=0 GOOS=linux \
+    go build -ldflags="-s -w" -o app ./api-gateway/cmd
+
+FROM alpine:3.20
+
+WORKDIR /app
+COPY --from=builder /app/app .
+
+CMD ["./app"]

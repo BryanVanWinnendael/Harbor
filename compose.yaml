@@ -1,9 +1,0 @@
-version: "3.8"
-services:
-  harbor:
-    build: .
-    ports:
-      - "8004:3000"
-    volumes:
-      - .:/app
-      - /var/run/docker.sock:/var/run/docker.sock
