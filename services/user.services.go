@@ -6,7 +6,6 @@ import (
 )
 
 func NewUserServices(u User, uStore db.Store) *UserServices {
-
 	return &UserServices{
 		User:      u,
 		UserStore: uStore,
@@ -26,7 +25,6 @@ type UserServices struct {
 }
 
 func (us *UserServices) CheckUsername(username string) (User, error) {
-
 	query := `SELECT id, password, username, changed_password FROM users
 		WHERE username = ?`
 
@@ -55,7 +53,6 @@ func (us *UserServices) CheckUsername(username string) (User, error) {
 }
 
 func (us *UserServices) ChangePassword(username, password string) error {
-
 	query := `UPDATE users
 		SET password = ?, changed_password = ?
 		WHERE username = ?`

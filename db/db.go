@@ -4,6 +4,8 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"os"
+	"path/filepath"
 
 	_ "github.com/mattn/go-sqlite3"
 	"golang.org/x/crypto/bcrypt"
@@ -34,13 +36,19 @@ func getConnection(dbName string) (*sql.DB, error) {
 		db  *sql.DB
 	)
 
-	// Init SQLite3 database
-	db, err = sql.Open("sqlite3", dbName)
-	if err != nil {
-		return nil, fmt.Errorf("failed to connect to the database: %s", err)
+	dataDir := "./data"
+	if err := os.MkdirAll(dataDir, os.ModePerm); err != nil {
+		return nil, fmt.Errorf("failed to create data directory: %w", err)
 	}
 
-	log.Println("Connected Successfully to the Database")
+	dbPath := filepath.Join(dataDir, dbName)
+
+	db, err = sql.Open("sqlite3", dbPath)
+	if err != nil {
+		return nil, fmt.Errorf("failed to connect to the database: %w", err)
+	}
+
+	log.Println("Connected Successfully to the Database at", dbPath)
 
 	return db, nil
 }

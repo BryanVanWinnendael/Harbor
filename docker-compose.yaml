@@ -1,10 +1,16 @@
 version: "3.8"
 services:
   harbor:
-    build: .
+    container_name: harbor
+    build:
+      dockerfile: Dockerfile
+      context: .
     ports:
       - "8004:3000"
     restart: unless-stopped
+    env_file:
+      - .env
     volumes:
-      - .:/app
+      - ./data:/app/data
+      - ./css/output.css:/app/css/output.css
       - /var/run/docker.sock:/var/run/docker.sock

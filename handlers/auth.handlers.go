@@ -81,7 +81,11 @@ func (ah *AuthHandler) loginHandler(c echo.Context) error {
 		}
 
 		// Get Session and setting Cookies
-		sess, _ := session.Get(auth_sessions_key, c)
+		sess, err := session.Get(auth_sessions_key, c)
+		if err != nil {
+			setFlashmessages(c, "error", "Something went wrong while creating a session")
+			return err
+		}
 		sess.Options = &sessions.Options{
 			Path:     "/",
 			MaxAge:   2629743, // in seconds
@@ -90,13 +94,13 @@ func (ah *AuthHandler) loginHandler(c echo.Context) error {
 
 		// Set user as authenticated, their username,
 		// their ID and the client's time zone
-		sess.Values = map[interface{}]interface{}{
-			auth_key:     true,
-			user_id_key:  user.ID,
-			username_key: user.Username,
-			tzone_key:    tzone,
+		sess.Values[auth_key] = true
+		sess.Values[user_id_key] = user.ID
+		sess.Values[username_key] = user.Username
+		sess.Values[tzone_key] = tzone
+		if err := sess.Save(c.Request(), c.Response()); err != nil {
+			return err
 		}
-		sess.Save(c.Request(), c.Response())
 
 		if !user.ChangedPassword {
 			return c.Redirect(http.StatusSeeOther, "/password")
@@ -125,12 +129,17 @@ func (ah *AuthHandler) passwordHandler(c echo.Context) error {
 	passwordView := auth_views.Password(false)
 	isError = false
 
-	sess, _ := session.Get(auth_sessions_key, c)
+	sess, err := session.Get(auth_sessions_key, c)
+	if err != nil {
+		setFlashmessages(c, "error", "Something went wrong while creating a session")
+		return err
+	}
 
 	username := sess.Values[username_key].(string)
 
 	user, err := ah.UserServices.CheckUsername(username)
 	if err != nil {
+		setFlashmessages(c, "error", "Something went wrong while checking the username")
 		return c.Redirect(http.StatusSeeOther, "/password")
 	}
 
@@ -148,6 +157,7 @@ func (ah *AuthHandler) passwordHandler(c echo.Context) error {
 
 		err := ah.UserServices.ChangePassword(username, newPassword)
 		if err != nil {
+			setFlashmessages(c, "error", "Something went wrong while changing the password")
 			return c.Redirect(http.StatusSeeOther, "/password")
 		}
 
