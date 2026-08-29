@@ -8,6 +8,7 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
+	"sync"
 
 	"strings"
 
@@ -18,6 +19,7 @@ import (
 	"github.com/docker/docker/api/types/image"
 	"github.com/docker/docker/api/types/network"
 	"github.com/docker/docker/api/types/strslice"
+	"github.com/docker/docker/pkg/stdcopy"
 
 	"github.com/docker/docker/client"
 	"github.com/docker/go-connections/nat"
@@ -25,12 +27,15 @@ import (
 
 func NewContainerServices(cli *client.Client) *ContainerServices {
 	return &ContainerServices{
-		cli: cli,
+		cli:  cli,
+		cwds: make(map[string]string),
 	}
 }
 
 type ContainerServices struct {
-	cli *client.Client
+	cli   *client.Client
+	cwdMu sync.RWMutex
+	cwds  map[string]string
 }
 
 func (cs *ContainerServices) GetContainers() ([]types.Container, error) {
@@ -262,49 +267,108 @@ func (cs *ContainerServices) SetupMySQLContainer(containerName, rootPassword, da
 	return nil
 }
 
-func (cs *ContainerServices) ExecCommandInContainer(id, cmd string) (string, error) {
+func (cs *ContainerServices) getCWD(id string) string {
+	cs.cwdMu.RLock()
+	defer cs.cwdMu.RUnlock()
+
+	if cwd, ok := cs.cwds[id]; ok {
+		return cwd
+	}
+
+	return "/"
+}
+
+func (cs *ContainerServices) setCWD(id, cwd string) {
+	cs.cwdMu.Lock()
+	defer cs.cwdMu.Unlock()
+
+	cs.cwds[id] = cwd
+}
+
+func (cs *ContainerServices) RemoveCWD(id string) {
+	cs.cwdMu.Lock()
+	defer cs.cwdMu.Unlock()
+
+	delete(cs.cwds, id)
+}
+
+func (cs *ContainerServices) ExecCommandInContainer(id, cmd string) (string, string, error) {
+	cwd := cs.getCWD(id)
+
+	// We use a marker so that we can reliably separate the command's
+	// output from the final working directory.
+	const marker = "__HARBOR_CWD_7f3c9a__"
+
+	script := fmt.Sprintf(
+		`cd %s 2>/dev/null || exit $?; %s; printf '\n%s%%s\n' "$PWD"`,
+		shellQuote(cwd),
+		cmd,
+		marker,
+	)
+
 	execConfig := container.ExecOptions{
-		Cmd:          strslice.StrSlice([]string{"/bin/bash", "-c", cmd}),
+		Cmd:          strslice.StrSlice([]string{"/bin/sh", "-c", script}),
 		AttachStdout: true,
 		AttachStderr: true,
 	}
 
-	resp, err := cs.cli.ContainerExecCreate(context.Background(), id, execConfig)
+	resp, err := cs.cli.ContainerExecCreate(
+		context.Background(),
+		id,
+		execConfig,
+	)
 	if err != nil {
-		return "", err
+		return "", cwd, err
 	}
 
-	attachResp, err := cs.cli.ContainerExecAttach(context.Background(), resp.ID, container.ExecStartOptions{})
+	attachResp, err := cs.cli.ContainerExecAttach(
+		context.Background(),
+		resp.ID,
+		container.ExecStartOptions{},
+	)
 	if err != nil {
-		return "", err
+		return "", cwd, err
 	}
 	defer attachResp.Close()
 
-	var lines []string
+	var output strings.Builder
 
-	hdr := make([]byte, 8)
-	for {
-		_, err := attachResp.Conn.Read(hdr)
-		if err != nil {
-			if err == io.EOF {
-				break
-			}
-			return "", err
-		}
-
-		count := binary.BigEndian.Uint32(hdr[4:])
-		dat := make([]byte, count)
-		_, err = attachResp.Conn.Read(dat)
-		if err != nil {
-			return "", err
-		}
-
-		lines = append(lines, string(dat))
+	// Docker multiplexes stdout/stderr. stdcopy handles the Docker
+	// headers for us.
+	_, err = stdcopy.StdCopy(
+		&output,
+		&output,
+		attachResp.Reader,
+	)
+	if err != nil {
+		return "", cwd, err
 	}
 
-	return strings.Join(lines, "\n"), nil
+	result := output.String()
+
+	newCWD := cwd
+
+	if index := strings.LastIndex(result, "\n"+marker); index != -1 {
+		commandOutput := result[:index]
+
+		pathStart := index + len("\n"+marker)
+		path := strings.TrimSpace(result[pathStart:])
+
+		if path != "" {
+			newCWD = path
+		}
+
+		result = strings.TrimRight(commandOutput, "\n")
+	}
+
+	cs.setCWD(id, newCWD)
+
+	return result, newCWD, nil
 }
 
+func shellQuote(value string) string {
+	return "'" + strings.ReplaceAll(value, "'", "'\"'\"'") + "'"
+}
 func (cs *ContainerServices) GetContainerStats(containerID string) (dto.ContainerStats, error) {
 	statsResponse, err := cs.cli.ContainerStats(context.Background(), containerID, false)
 	if err != nil {

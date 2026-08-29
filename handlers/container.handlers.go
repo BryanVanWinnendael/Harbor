@@ -22,7 +22,7 @@ type ContainerService interface {
 	RecreateContainer(id string) error
 	RemoveContainer(id string) error
 	SetupMySQLContainer(containerName, rootPassword, databaseName, hostPort string) error
-	ExecCommandInContainer(id, cmd string) (string, error)
+	ExecCommandInContainer(id, cmd string) (string, string, error)
 	GetContainerStats(containerID string) (dto.ContainerStats, error)
 	PruneContainers() (string, error)
 	PruneImages() (string, error)
@@ -215,13 +215,22 @@ func (cs *ContainerHandler) execCommandInContainer(c echo.Context) error {
 	id := c.Param("id")
 	cmd := c.FormValue("cmd")
 
-	output, err := cs.ContainerServices.ExecCommandInContainer(id, cmd)
+	output, cwd, err := cs.ContainerServices.ExecCommandInContainer(id, cmd)
 	if err != nil {
 		setFlashmessages(c, "error", "Failed to run command in container")
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to run command in container"})
+
+		return c.JSON(
+			http.StatusInternalServerError,
+			map[string]string{
+				"error": "Failed to run command in container",
+			},
+		)
 	}
 
-	return renderView(c, container_views.ContainerBashLine(output))
+	return renderView(
+		c,
+		container_views.ContainerBashLine(cmd, output, cwd),
+	)
 }
 
 func (cs *ContainerHandler) getContainerStats(c echo.Context) error {

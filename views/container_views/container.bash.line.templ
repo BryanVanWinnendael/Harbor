@@ -1,5 +1,17 @@
 package container_views
 
-templ ContainerBashLine(line string) {
-<pre>{ line }</pre>
+templ ContainerBashLine(cmd, output, cwd string) {
+	<div class="mb-4 font-mono text-sm">
+		<div class="flex gap-2 text-emerald-400">
+			<span class="shrink-0 select-none">
+				{ cwd } $
+			</span>
+			<span class="break-all text-white">
+				{ cmd }
+			</span>
+		</div>
+		if output != "" {
+			<pre class="mt-1 whitespace-pre-wrap break-words text-gray-300">{ output }</pre>
+		}
+	</div>
 }
