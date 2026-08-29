@@ -295,7 +295,7 @@ func (cs *ContainerServices) RemoveCWD(id string) {
 func (cs *ContainerServices) ExecCommandInContainer(id, cmd string) (string, string, error) {
 	cwd := cs.getCWD(id)
 
-	// We use a marker so that we can reliably separate the command's
+	// Use a marker so that it can reliably separate the command's
 	// output from the final working directory.
 	const marker = "__HARBOR_CWD_7f3c9a__"
 
@@ -333,8 +333,7 @@ func (cs *ContainerServices) ExecCommandInContainer(id, cmd string) (string, str
 
 	var output strings.Builder
 
-	// Docker multiplexes stdout/stderr. stdcopy handles the Docker
-	// headers for us.
+	// Docker multiplexes stdout/stderr. stdcopy handles the Docker headers
 	_, err = stdcopy.StdCopy(
 		&output,
 		&output,
@@ -369,34 +368,164 @@ func (cs *ContainerServices) ExecCommandInContainer(id, cmd string) (string, str
 func shellQuote(value string) string {
 	return "'" + strings.ReplaceAll(value, "'", "'\"'\"'") + "'"
 }
-func (cs *ContainerServices) GetContainerStats(containerID string) (dto.ContainerStats, error) {
-	statsResponse, err := cs.cli.ContainerStats(context.Background(), containerID, false)
+
+func (cs *ContainerServices) GetContainerStats(containerID string) (*dto.ContainerStats, error) {
+	statsResponse, err := cs.cli.ContainerStats(
+		context.Background(),
+		containerID,
+		false,
+	)
 	if err != nil {
-		return dto.ContainerStats{}, err
+		return &dto.ContainerStats{}, err
 	}
+
 	defer statsResponse.Body.Close()
 
-	var v *types.StatsJSON
+	var v types.StatsJSON
+
 	dec := json.NewDecoder(statsResponse.Body)
+
 	if err := dec.Decode(&v); err != nil {
-		return dto.ContainerStats{}, err
+		return &dto.ContainerStats{}, err
 	}
 
-	cpuDelta := float64(v.CPUStats.CPUUsage.TotalUsage) - float64(v.PreCPUStats.CPUUsage.TotalUsage)
-	systemDelta := float64(v.CPUStats.SystemUsage) - float64(v.PreCPUStats.SystemUsage)
+	// -------------------------
+	// CPU
+	// -------------------------
+
+	cpuDelta :=
+		float64(v.CPUStats.CPUUsage.TotalUsage) -
+			float64(v.PreCPUStats.CPUUsage.TotalUsage)
+
+	systemDelta :=
+		float64(v.CPUStats.SystemUsage) -
+			float64(v.PreCPUStats.SystemUsage)
+
 	numberOfCores := float64(v.CPUStats.OnlineCPUs)
 
-	cpuPercentage := (cpuDelta / systemDelta) * numberOfCores * 100.0
+	cpuPercentage := float64(0)
 
-	memoryUsageMB := float64(v.MemoryStats.Usage / 1024 / 1024)
-	memoryLimitMB := float64(v.MemoryStats.Limit / 1024 / 1024)
+	if systemDelta > 0 && cpuDelta > 0 {
+		if numberOfCores == 0 {
+			numberOfCores = float64(len(v.CPUStats.CPUUsage.PercpuUsage))
+		}
 
-	memoryUsagePercentage := (memoryUsageMB / memoryLimitMB) * 100
+		cpuPercentage =
+			(cpuDelta / systemDelta) *
+				numberOfCores *
+				100
+	}
 
-	stats := dto.ContainerStats{
-		CPUPercentage: fmt.Sprintf("%.2f%%", cpuPercentage),
-		MemoryUsageMB: fmt.Sprintf("%.2f%%", memoryUsagePercentage),
-		MemoryLimitMB: fmt.Sprintf("%.2f", memoryLimitMB),
+	// -------------------------
+	// Memory
+	// -------------------------
+
+	memoryUsageMB :=
+		float64(v.MemoryStats.Usage) / 1024 / 1024
+
+	memoryLimitMB :=
+		float64(v.MemoryStats.Limit) / 1024 / 1024
+
+	memoryUsagePercentage := float64(0)
+
+	if memoryLimitMB > 0 {
+		memoryUsagePercentage =
+			(memoryUsageMB / memoryLimitMB) *
+				100
+	}
+
+	// -------------------------
+	// Network
+	// -------------------------
+
+	var networkRx uint64
+	var networkTx uint64
+
+	for _, network := range v.Networks {
+		networkRx += network.RxBytes
+		networkTx += network.TxBytes
+	}
+
+	networkRxMB :=
+		float64(networkRx) / 1024 / 1024
+
+	networkTxMB :=
+		float64(networkTx) / 1024 / 1024
+
+	// -------------------------
+	// Block I/O
+	// -------------------------
+
+	var blockRead uint64
+	var blockWrite uint64
+
+	for _, entry := range v.BlkioStats.IoServiceBytesRecursive {
+		switch strings.ToLower(entry.Op) {
+		case "read":
+			blockRead += entry.Value
+
+		case "write":
+			blockWrite += entry.Value
+		}
+	}
+
+	blockReadMB :=
+		float64(blockRead) / 1024 / 1024
+
+	blockWriteMB :=
+		float64(blockWrite) / 1024 / 1024
+
+	// -------------------------
+	// PIDs
+	// -------------------------
+
+	pids := v.PidsStats.Current
+
+	stats := &dto.ContainerStats{
+		CPUPercentage: fmt.Sprintf(
+			"%.2f%%",
+			cpuPercentage,
+		),
+
+		MemoryUsageMB: fmt.Sprintf(
+			"%.2f",
+			memoryUsageMB,
+		),
+
+		MemoryLimitMB: fmt.Sprintf(
+			"%.2f",
+			memoryLimitMB,
+		),
+
+		MemoryUsagePercentage: fmt.Sprintf(
+			"%.2f%%",
+			memoryUsagePercentage,
+		),
+
+		NetworkRxMB: fmt.Sprintf(
+			"%.2f MB",
+			networkRxMB,
+		),
+
+		NetworkTxMB: fmt.Sprintf(
+			"%.2f MB",
+			networkTxMB,
+		),
+
+		BlockReadMB: fmt.Sprintf(
+			"%.2f MB",
+			blockReadMB,
+		),
+
+		BlockWriteMB: fmt.Sprintf(
+			"%.2f MB",
+			blockWriteMB,
+		),
+
+		PIDs: fmt.Sprintf(
+			"%d",
+			pids,
+		),
 	}
 
 	return stats, nil

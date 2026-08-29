@@ -81,7 +81,6 @@ func (is *ImageServices) PullImage(imageString string) error {
 func (is *ImageServices) CreateContainer(id, mappedPort, name, env string) error {
 	envArray := []string{}
 
-	// Split and trim environment variables
 	if env != "" {
 		envArray = strings.Split(env, ",")
 		for i := range envArray {
@@ -92,7 +91,6 @@ func (is *ImageServices) CreateContainer(id, mappedPort, name, env string) error
 	hostPort := ""
 	containerPort := ""
 
-	// Parse mappedPort into hostPort and containerPort if provided
 	if mappedPort != "" {
 		parts := strings.Split(mappedPort, ":")
 		if len(parts) == 2 {
@@ -110,13 +108,11 @@ func (is *ImageServices) CreateContainer(id, mappedPort, name, env string) error
 	var portBindings nat.PortMap
 	if mappedPort != "" {
 		if containerPort == "" {
-			// Get image information to determine exposed ports
 			imgInspect, _, err := is.cli.ImageInspectWithRaw(context.Background(), id)
 			if err != nil {
 				return fmt.Errorf("failed to inspect image %s: %v", id, err)
 			}
 
-			// Convert nat.PortSet to map[nat.Port]struct{}
 			exposedPorts = make(map[nat.Port]struct{})
 			for port := range imgInspect.Config.ExposedPorts {
 				exposedPorts[port] = struct{}{}
@@ -134,7 +130,6 @@ func (is *ImageServices) CreateContainer(id, mappedPort, name, env string) error
 			}
 
 		} else {
-			// Create port bindings for the specified containerPort
 			exposedPort := nat.Port(containerPort + "/tcp")
 			exposedPorts = map[nat.Port]struct{}{
 				exposedPort: {},

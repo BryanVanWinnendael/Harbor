@@ -23,7 +23,7 @@ type ContainerService interface {
 	RemoveContainer(id string) error
 	SetupMySQLContainer(containerName, rootPassword, databaseName, hostPort string) error
 	ExecCommandInContainer(id, cmd string) (string, string, error)
-	GetContainerStats(containerID string) (dto.ContainerStats, error)
+	GetContainerStats(containerID string) (*dto.ContainerStats, error)
 	PruneContainers() (string, error)
 	PruneImages() (string, error)
 	PruneVolumes() (string, error)
@@ -241,7 +241,7 @@ func (cs *ContainerHandler) getContainerStats(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to get container stats"})
 	}
 
-	return renderView(c, container_views.ContainerStats(stats))
+	return renderView(c, container_views.ContainerStats(*stats))
 }
 
 func (cs *ContainerHandler) pruneContainers(c echo.Context) error {

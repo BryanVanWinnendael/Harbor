@@ -166,8 +166,8 @@ templ Container(container types.ContainerJSON, publicURLs [][]string) {
 		<div
 			hx-get={ "/containers/" + container.ID + "/stats" }
 			hx-trigger="load, every 5s"
-			hx-swap="#stats-content"
-			class="w-full overflow-scroll pb-4 px-4"
+			hx-swap="innerHTML"
+			class="w-full overflow-x-auto overflow-y-hidden pb-4 px-4"
 		>
 			@ContainerStats(dto.ContainerStats{})
 		</div>

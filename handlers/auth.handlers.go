@@ -47,7 +47,6 @@ func (ah *AuthHandler) loginHandler(c echo.Context) error {
 	isError = false
 
 	if c.Request().Method == "POST" {
-		// obtaining the time zone from the POST request of the login form
 		tzone := ""
 		if len(c.Request().Header["X-Timezone"]) != 0 {
 			tzone = c.Request().Header["X-Timezone"][0]
@@ -80,7 +79,6 @@ func (ah *AuthHandler) loginHandler(c echo.Context) error {
 			return c.Redirect(http.StatusSeeOther, "/login")
 		}
 
-		// Get Session and setting Cookies
 		sess, err := session.Get(auth_sessions_key, c)
 		if err != nil {
 			setFlashmessages(c, "error", "Something went wrong while creating a session")
@@ -92,8 +90,6 @@ func (ah *AuthHandler) loginHandler(c echo.Context) error {
 			HttpOnly: true,
 		}
 
-		// Set user as authenticated, their username,
-		// their ID and the client's time zone
 		sess.Values[auth_key] = true
 		sess.Values[user_id_key] = user.ID
 		sess.Values[username_key] = user.Username

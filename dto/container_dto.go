@@ -6,7 +6,16 @@ type ContainerDto struct {
 }
 
 type ContainerStats struct {
-	CPUPercentage string
-	MemoryUsageMB string
-	MemoryLimitMB string
+	CPUPercentage         string
+	MemoryUsageMB         string
+	MemoryLimitMB         string
+	MemoryUsagePercentage string
+
+	NetworkRxMB string
+	NetworkTxMB string
+
+	BlockReadMB  string
+	BlockWriteMB string
+
+	PIDs string
 }
