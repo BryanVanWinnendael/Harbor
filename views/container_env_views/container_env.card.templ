@@ -1,0 +1,108 @@
+package container_env_views
+
+import "github.com/BryanVanWinnendael/Harbor/dto"
+
+templ ContainerEnvCard(container *dto.ContainerEnvironment) {
+	<div
+		x-data="{ open: false }"
+		class="rounded-lg border border-neutral-800/50 bg-black overflow-hidden"
+	>
+		<button
+			type="button"
+			@click="open = !open"
+			class="w-full flex items-center justify-between p-4 text-left hover:bg-neutral-900/50 transition"
+		>
+			<div class="flex items-center gap-3 min-w-0">
+				<span class="h-2.5 w-2.5 shrink-0 rounded-full bg-emerald-400"></span>
+				<div class="min-w-0">
+					<p class="font-semibold truncate">
+						{ container.ContainerName }
+					</p>
+					<p class="text-xs text-gray-500">
+						{ container.ContainerID }
+					</p>
+				</div>
+			</div>
+			<div class="flex items-center gap-3 shrink-0">
+				<span class="text-xs text-gray-500">
+					{ len(container.Variables) } variables
+				</span>
+				<svg
+					width="16"
+					height="16"
+					viewBox="0 0 24 24"
+					fill="none"
+					class="transition-transform"
+					:class="open ? 'rotate-180' : ''"
+				>
+					<path
+						d="M6 9L12 15L18 9"
+						stroke="currentColor"
+						stroke-width="1.5"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+					></path>
+				</svg>
+			</div>
+		</button>
+		<div
+			x-show="open"
+			x-collapse
+			class="border-t border-neutral-800/50"
+		>
+			if len(container.Variables) == 0 {
+				<div class="p-4 text-sm text-gray-500">
+					No environment variables.
+				</div>
+			} else {
+				<div class="divide-y divide-neutral-800/50">
+					for _, variable := range container.Variables {
+						<div
+							x-data="{ revealed: false }"
+							class="flex items-center gap-4 p-3 hover:bg-neutral-900/30 transition"
+						>
+							<div class="min-w-0 flex-1">
+								<p class="font-mono text-sm text-gray-300 break-all">
+									{ variable.Key }
+								</p>
+							</div>
+							<div class="flex items-center gap-2 min-w-0 max-w-[50%]">
+								if variable.IsSecret {
+									<p
+										x-show="!revealed"
+										class="font-mono text-sm text-gray-500 truncate"
+									>
+										••••••••••••
+									</p>
+									<p
+										x-show="revealed"
+										x-cloak
+										class="font-mono text-sm text-gray-300 break-all"
+									>
+										{ variable.Value }
+									</p>
+									<button
+										type="button"
+										@click="revealed = !revealed"
+										class="shrink-0 text-xs text-gray-500 hover:text-white transition"
+									>
+										<span x-show="!revealed">
+											reveal
+										</span>
+										<span x-show="revealed" x-cloak>
+											hide
+										</span>
+									</button>
+								} else {
+									<p class="font-mono text-sm text-gray-300 break-all">
+										{ variable.Value }
+									</p>
+								}
+							</div>
+						</div>
+					}
+				</div>
+			}
+		</div>
+	</div>
+}

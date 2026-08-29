@@ -7,7 +7,7 @@ var (
 	fromProtected bool = false
 )
 
-func SetupRoutes(e *echo.Echo, ah *AuthHandler, ch *ContainerHandler, ih *ImageHandler, anh *AnalyticsHandler) {
+func SetupRoutes(e *echo.Echo, ah *AuthHandler, ch *ContainerHandler, ih *ImageHandler, anh *AnalyticsHandler, ceh *ContainerEnvironmentHandler) {
 	e.GET("/login", ah.loginHandler)
 	e.POST("/login", ah.loginHandler)
 
@@ -15,6 +15,8 @@ func SetupRoutes(e *echo.Echo, ah *AuthHandler, ch *ContainerHandler, ih *ImageH
 
 	protectedGroup.GET("password", ah.passwordHandler)
 	protectedGroup.POST("password", ah.passwordHandler)
+
+	protectedGroup.GET("containers/info", ceh.GetEnvironments)
 
 	protectedGroup.GET("", ch.listContainers)          // Gets HTML page
 	protectedGroup.GET("containers", ch.getContainers) // Gets JSON data
@@ -52,4 +54,5 @@ func SetupRoutes(e *echo.Echo, ah *AuthHandler, ch *ContainerHandler, ih *ImageH
 	protectedGroup.GET("analytics/memory", anh.getContainersMemoryUsage)
 	protectedGroup.GET("analytics/network", anh.getContainersNetworkUsage)
 	protectedGroup.GET("analytics/disk", anh.getContainersDiskUsage)
+
 }

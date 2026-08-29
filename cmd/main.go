@@ -53,13 +53,15 @@ func main() {
 	cs := services.NewContainerServices(cli)
 	is := services.NewImageServices(cli)
 	as := services.NewAnalyticsServices(cli)
+	ces := services.NewContainerEnvironmentServices(cli)
 
 	ch := handlers.NewContainerHandler(cs)
 	ih := handlers.NewImageHandler(is)
 	anh := handlers.NewAnalyticsHandler(as)
 	ah := handlers.NewAuthHandler(us)
+	ceh := handlers.NewContainerEnvironmentHandler(ces)
 
-	handlers.SetupRoutes(e, ah, ch, ih, anh)
+	handlers.SetupRoutes(e, ah, ch, ih, anh, ceh)
 
 	e.Logger.Fatal(e.Start(":3000"))
 }

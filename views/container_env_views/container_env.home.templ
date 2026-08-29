@@ -1,0 +1,17 @@
+package container_env_views
+
+import "github.com/BryanVanWinnendael/Harbor/dto"
+
+templ ContainerEnvHome(environments []*dto.ContainerEnvironment) {
+	<section class="w-full flex flex-col gap-2 h-full overflow-hidden">
+		<div
+			class="flex-1 overflow-y-auto border border-neutral-800/50 rounded-lg bg-[#0b0b0b] p-4"
+		>
+			<div class="grid grid-cols-1 xl:grid-cols-2 gap-4">
+				for _, environment := range environments {
+					@ContainerEnvCard(environment)
+				}
+			</div>
+		</div>
+	</section>
+}
