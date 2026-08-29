@@ -1,0 +1,81 @@
+package analytics_views
+
+import (
+	"fmt"
+
+	"github.com/BryanVanWinnendael/Harbor/dto"
+)
+
+templ AnalyticsDiskUsage(usage dto.ContainersDiskUsageDTO, loading bool) {
+	<div class="h-full w-full p-4 flex flex-col">
+		<h3 class="scroll-m-20 text-2xl font-semibold tracking-tight">
+			Disk Usage
+		</h3>
+		if loading {
+			<p class="text-gray-300">Loading data</p>
+		} else {
+			<div class="flex gap-6 mt-4">
+				<div class="flex flex-col gap-1">
+					<p class="text-gray-400">Read</p>
+					<p class="text-green-300 text-xl font-semibold">
+						{ fmt.Sprintf("%.2f MB", usage.TotalReadMB) }
+					</p>
+				</div>
+				<div class="flex flex-col gap-1">
+					<p class="text-gray-400">Write</p>
+					<p class="text-red-300 text-xl font-semibold">
+						{ fmt.Sprintf("%.2f MB", usage.TotalWriteMB) }
+					</p>
+				</div>
+				<div class="flex flex-col gap-1">
+					<p class="text-gray-400">Total I/O</p>
+					<p class="text-gray-200 text-xl font-semibold">
+						{ fmt.Sprintf("%.2f MB", usage.TotalReadMB + usage.TotalWriteMB) }
+					</p>
+				</div>
+			</div>
+			<div class="mt-6 flex flex-col gap-2">
+				<div class="flex items-center justify-between text-sm">
+					<span class="text-gray-400">
+						Read
+					</span>
+					<span class="text-gray-300">
+						{ fmt.Sprintf("%.2f MB", usage.TotalReadMB) }
+					</span>
+				</div>
+				<div class="h-2 w-full overflow-hidden rounded-full bg-black border border-neutral-800/50">
+					<div
+						class="h-full rounded-full bg-green-400"
+						style={ fmt.Sprintf("width: %.2f%%", func() float64 {
+							total := usage.TotalReadMB + usage.TotalWriteMB
+							if total == 0 {
+								return 0
+							}
+							return (usage.TotalReadMB / total) * 100
+						}()) }
+					></div>
+				</div>
+				<div class="flex items-center justify-between text-sm mt-2">
+					<span class="text-gray-400">
+						Write
+					</span>
+					<span class="text-gray-300">
+						{ fmt.Sprintf("%.2f MB", usage.TotalWriteMB) }
+					</span>
+				</div>
+				<div class="h-2 w-full overflow-hidden rounded-full bg-black border border-neutral-800/50">
+					<div
+						class="h-full rounded-full bg-red-400"
+						style={ fmt.Sprintf("width: %.2f%%", func() float64 {
+							total := usage.TotalReadMB + usage.TotalWriteMB
+							if total == 0 {
+								return 0
+							}
+							return (usage.TotalWriteMB / total) * 100
+						}()) }
+					></div>
+				</div>
+			</div>
+		}
+	</div>
+}

@@ -41,3 +41,8 @@ type ContainersNetworkUsageDTO struct {
 	InPacketsDropped  uint64  `json:"inPacketsDropped"`
 	OutPacketsDropped uint64  `json:"outPacketsDropped"`
 }
+
+type ContainersDiskUsageDTO struct {
+	TotalReadMB  float64
+	TotalWriteMB float64
+}

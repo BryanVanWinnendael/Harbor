@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"log"
 	"strconv"
+	"strings"
 	"sync"
 
 	"github.com/BryanVanWinnendael/Harbor/dto"
@@ -397,5 +398,92 @@ func (is *AnalyticsServices) GetContainersNetworkUsage() (dto.ContainersNetworkU
 		SentErrors:        sentErrors,
 		InPacketsDropped:  inPacketsDropped,
 		OutPacketsDropped: outPacketsDropped,
+	}, nil
+}
+
+func (is *AnalyticsServices) GetContainersDiskUsage() (dto.ContainersDiskUsageDTO, error) {
+	containers, err := is.cli.ContainerList(
+		context.Background(),
+		container.ListOptions{All: true},
+	)
+	if err != nil {
+		return dto.ContainersDiskUsageDTO{}, err
+	}
+
+	type result struct {
+		read  uint64
+		write uint64
+		err   error
+	}
+
+	results := make(chan result, len(containers))
+
+	var wg sync.WaitGroup
+
+	for _, c := range containers {
+		wg.Add(1)
+
+		go func(c types.Container) {
+			defer wg.Done()
+
+			statsResponse, err := is.cli.ContainerStats(
+				context.Background(),
+				c.ID,
+				false,
+			)
+
+			if err != nil {
+				results <- result{err: err}
+				return
+			}
+
+			defer statsResponse.Body.Close()
+
+			var stats types.StatsJSON
+
+			if err := json.NewDecoder(statsResponse.Body).Decode(&stats); err != nil {
+				results <- result{err: err}
+				return
+			}
+
+			var read uint64
+			var write uint64
+
+			for _, entry := range stats.BlkioStats.IoServiceBytesRecursive {
+				switch strings.ToLower(entry.Op) {
+				case "read":
+					read += entry.Value
+				case "write":
+					write += entry.Value
+				}
+			}
+
+			results <- result{
+				read:  read,
+				write: write,
+			}
+		}(c)
+	}
+
+	go func() {
+		wg.Wait()
+		close(results)
+	}()
+
+	var totalRead uint64
+	var totalWrite uint64
+
+	for result := range results {
+		if result.err != nil {
+			return dto.ContainersDiskUsageDTO{}, result.err
+		}
+
+		totalRead += result.read
+		totalWrite += result.write
+	}
+
+	return dto.ContainersDiskUsageDTO{
+		TotalReadMB:  float64(totalRead) / 1024 / 1024,
+		TotalWriteMB: float64(totalWrite) / 1024 / 1024,
 	}, nil
 }

@@ -1,34 +1,73 @@
 package analytics_views
-import (
-"github.com/BryanVanWinnendael/Harbor/dto"
-)
+
+import "github.com/BryanVanWinnendael/Harbor/dto"
 
 templ AnalyticsHome() {
-<section class="w-full flex flex-col gap-2 h-full overflow-hidden">
-	<div class="w-full p-2 flex gap-4 overflow-x-scroll">
-		<a href="/" class="flex items-center gap-1">
-			<svg width="20" height="20" viewBox="0 0 1024 1024" fill="white" class="icon" version="1.1"
-				xmlns="http://www.w3.org/2000/svg">
-				<path
-					d="M669.6 849.6c8.8 8 22.4 7.2 30.4-1.6s7.2-22.4-1.6-30.4l-309.6-280c-8-7.2-8-17.6 0-24.8l309.6-270.4c8.8-8 9.6-21.6 2.4-30.4-8-8.8-21.6-9.6-30.4-2.4L360.8 480.8c-27.2 24-28 64-0.8 88.8l309.6 280z"
-					fill=""></path>
-			</svg>
-			back
-		</a>
-	</div>
-	<div class="h-full w-full md:!grid flex flex-col gap-2 grid-cols-3 grid-rows-2 overflow-hidden">
-		<div hx-get="/analytics/usage" hx-trigger="load, every 15s" hx-swap="#innerHTML"
-			class="border border-neutral-800/50 rounded-lg h-full w-full bg-[#0b0b0b] col-start-1">
-			@AnalyticsUsage(dto.UsageDTO{}, true)</div>
-		<div hx-get="/analytics/cpu" hx-trigger="load, every 15s" hx-swap="#innerHTML"
-			class="border border-neutral-800/50 rounded-lg h-full w-full bg-[#0b0b0b] col-start-2 col-span-3">
-			@AnalyticsCpuUsage(dto.ContainersCpuUsageDTO{}, true)</div>
-		<div hx-get="/analytics/memory" hx-trigger="load, every 15s" hx-swap="#innerHTML"
-			class="border border-neutral-800/50 rounded-lg h-full w-full bg-[#0b0b0b] row-start-2 col-span-2">
-			@AnalyticsMemoryUsage(dto.ContainersMemoryUsageDTO{}, true)</div>
-		<div hx-get="/analytics/network" hx-trigger="load, every 15s" hx-swap="#innerHTML"
-			class="border border-neutral-800/50 rounded-lg h-full w-full bg-[#0b0b0b] row-start-2 col-span-3">
-			@AnalyticsNetworkUsage(dto.ContainersNetworkUsageDTO{}, true)</div>
-	</div>
-</section>
+	<section class="w-full flex flex-col gap-2 h-full overflow-hidden">
+		<div class="w-full p-2 flex gap-4 overflow-x-scroll">
+			<a href="/" class="flex items-center gap-1">
+				<svg
+					width="20"
+					height="20"
+					viewBox="0 0 1024 1024"
+					fill="white"
+					class="icon"
+					version="1.1"
+					xmlns="http://www.w3.org/2000/svg"
+				>
+					<path
+						d="M669.6 849.6c8.8 8 22.4 7.2 30.4-1.6s7.2-22.4-1.6-30.4l-309.6-280c-8-7.2-8-17.6 0-24.8l309.6-270.4c8.8-8 9.6-21.6 2.4-30.4-8-8.8-21.6-9.6-30.4-2.4L360.8 480.8c-27.2 24-28 64-0.8 88.8l309.6 280z"
+					></path>
+				</svg>
+				back
+			</a>
+		</div>
+		<div class="h-full w-full md:!grid flex flex-col gap-2 grid-cols-3 grid-rows-3 overflow-hidden">
+			<!-- Disk / Docker storage -->
+			<div
+				hx-get="/analytics/usage"
+				hx-trigger="load, every 15s"
+				hx-swap="innerHTML"
+				class="border border-neutral-800/50 rounded-lg h-full w-full bg-[#0b0b0b] col-start-1 row-start-1"
+			>
+				@AnalyticsUsage(dto.UsageDTO{}, true)
+			</div>
+			<!-- CPU -->
+			<div
+				hx-get="/analytics/cpu"
+				hx-trigger="load, every 15s"
+				hx-swap="innerHTML"
+				class="border border-neutral-800/50 rounded-lg h-full w-full bg-[#0b0b0b] col-start-2 col-span-2 row-start-1"
+			>
+				@AnalyticsCpuUsage(dto.ContainersCpuUsageDTO{}, true)
+			</div>
+			<!-- Memory -->
+			<div
+				hx-get="/analytics/memory"
+				hx-trigger="load, every 15s"
+				hx-swap="innerHTML"
+				class="border border-neutral-800/50 rounded-lg h-full w-full bg-[#0b0b0b] col-start-1 col-span-2 row-start-2"
+			>
+				@AnalyticsMemoryUsage(dto.ContainersMemoryUsageDTO{}, true)
+			</div>
+			<!-- Network -->
+			<div
+				hx-get="/analytics/network"
+				hx-trigger="load, every 15s"
+				hx-swap="innerHTML"
+				class="border border-neutral-800/50 rounded-lg h-full w-full bg-[#0b0b0b] col-start-3 row-start-2"
+			>
+				@AnalyticsNetworkUsage(dto.ContainersNetworkUsageDTO{}, true)
+			</div>
+			<!-- Disk I/O -->
+			<div
+				hx-get="/analytics/disk"
+				hx-trigger="load, every 15s"
+				hx-swap="innerHTML"
+				class="border border-neutral-800/50 rounded-lg h-full w-full bg-[#0b0b0b] col-start-1 col-span-3 row-start-3"
+			>
+				@AnalyticsDiskUsage(dto.ContainersDiskUsageDTO{}, true)
+			</div>
+		</div>
+	</section>
 }

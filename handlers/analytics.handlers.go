@@ -11,6 +11,7 @@ type AnalyticsService interface {
 	GetContainersCpuUsage() (dto.ContainersCpuUsageDTO, error)
 	GetContainersMemoryUsage() (dto.ContainersMemoryUsageDTO, error)
 	GetContainersNetworkUsage() (dto.ContainersNetworkUsageDTO, error)
+	GetContainersDiskUsage() (dto.ContainersDiskUsageDTO, error)
 }
 
 func NewAnalyticsHandler(as AnalyticsService) *AnalyticsHandler {
@@ -76,4 +77,15 @@ func (is *AnalyticsHandler) getContainersNetworkUsage(c echo.Context) error {
 	}
 
 	return renderView(c, analytics_views.AnalyticsNetworkUsage(usage, false))
+}
+
+func (is *AnalyticsHandler) getContainersDiskUsage(c echo.Context) error {
+	usage, err := is.AnalyticsServices.GetContainersDiskUsage()
+	if err != nil {
+		return c.JSON(500, map[string]string{
+			"error": err.Error(),
+		})
+	}
+
+	return renderView(c, analytics_views.AnalyticsDiskUsage(usage, false))
 }
