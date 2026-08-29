@@ -1,39 +1,68 @@
 package container_views
 
 templ ContainerRemove(containerID string) {
-<!-- Trigger button -->
-<button data-dialog-target={"dialog-remove-container-" + containerID}
-	class="w-full h-full flex items-center justify-center gap-2 bg-red-800 hover:bg-red-900 text-white font-bold py-2 px-4 rounded stroke-white border border-neutral-800/50 transition duration-100">
-	<svg width="12" height="12" viewBox="-0.5 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
-		<path d="M3 21.32L21 3.32001" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-		<path d="M3 3.32001L21 21.32" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-	</svg>
-	remove
-</button>
-
-<!-- Backdrop -->
-<div data-dialog-backdrop={"dialog-remove-container-" + containerID} data-dialog-backdrop-close="true"
-	class="hidden fixed inset-0 z-[999] grid h-screen w-screen place-items-center bg-black bg-opacity-60 backdrop-blur-sm transition-opacity duration-300">
-
-	<!-- Dialog panel -->
-	<div data-dialog={"dialog-remove-container-" + containerID}
-		class="relative m-4 min-w-[40%] sm:max-w-[40%] max-w-[90%] min-h-[40%] sm:max-h-[60%] max-h-[80%] h-fit border border-neutral-800/50 rounded-lg bg-[#171717] font-sans text-base font-light leading-relaxed text-white antialiased shadow-2xl opacity-0 scale-95 transition duration-200 p-5">
-
-		<div class="w-full h-full px-5 shadow-lg bg-black pb-4 rounded-lg flex flex-col gap-4">
-			<h3 class="scroll-m-20 text-2xl font-semibold tracking-tight">Are you sure you want to remove this container?</h3>
-
-			<div class="flex justify-start gap-2 w-full mt-4">
-				<button data-dialog-close="true"
-					class="bg-black hover:bg-neutral-900 text-white font-bold py-2 px-4 rounded stroke-white border border-neutral-800/50 transition duration-100">
-					cancel
-				</button>
-
-				<button hx-target="body" hx-delete={ "/containers/" + containerID + "/remove" } hx-swap="transition:false"
-					class="bg-red-800 hover:bg-red-900 text-white font-bold py-2 px-4 rounded stroke-white border border-neutral-800/50 transition duration-100">
-					remove
-				</button>
+	<button
+		type="button"
+		data-dialog-target={ "dialog-remove-container-" + containerID }
+		class="w-full h-full flex items-center justify-center gap-2 bg-red-800 hover:bg-red-900 text-white font-bold py-2 px-4 rounded border border-neutral-800/50 transition duration-100"
+	>
+		<svg
+			width="14"
+			height="14"
+			viewBox="0 0 24 24"
+			fill="none"
+			xmlns="http://www.w3.org/2000/svg"
+		>
+			<path
+				d="M6 7H18M10 11V17M14 11V17M8 7L9 21H15L16 7M9 7L10 4H14L15 7M4 7H20"
+				stroke="currentColor"
+				stroke-width="1.5"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+			></path>
+		</svg>
+		remove
+	</button>
+	<div
+		data-dialog-backdrop={ "dialog-remove-container-" + containerID }
+		data-dialog-backdrop-close="true"
+		class="hidden fixed inset-0 z-[999] flex h-screen w-screen items-center justify-center bg-black bg-opacity-60 backdrop-blur-sm transition-opacity duration-300 p-4"
+	>
+		<div
+			data-dialog={ "dialog-remove-container-" + containerID }
+			class="relative w-full max-w-md overflow-hidden rounded-lg border border-neutral-800/50 bg-[#171717] text-white shadow-2xl opacity-0 scale-95 transition duration-200"
+		>
+			<div class="bg-black p-5">
+				<div class="flex items-start gap-4">
+					<div class="min-w-0">
+						<h3 class="text-xl font-semibold tracking-tight">
+							Remove container?
+						</h3>
+						<p class="mt-2 text-sm leading-6 text-gray-400">
+							Are you sure you want to remove this container?
+							This action cannot be undone.
+						</p>
+					</div>
+				</div>
+				<div class="mt-6 flex justify-end gap-2">
+					<button
+						type="button"
+						data-dialog-close="true"
+						class="bg-black hover:bg-neutral-900 text-white font-bold py-2 px-4 rounded border border-neutral-800/50 transition duration-100"
+					>
+						cancel
+					</button>
+					<button
+						type="button"
+						hx-target="body"
+						hx-delete={ "/containers/" + containerID + "/remove" }
+						hx-swap="transition:false"
+						class="flex items-center justify-center gap-2 bg-red-800 hover:bg-red-900 text-white font-bold py-2 px-4 rounded border border-neutral-800/50 transition duration-100"
+					>
+						remove
+					</button>
+				</div>
 			</div>
 		</div>
 	</div>
-</div>
 }

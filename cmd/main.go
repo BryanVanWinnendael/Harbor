@@ -59,9 +59,7 @@ func main() {
 	anh := handlers.NewAnalyticsHandler(as)
 	ah := handlers.NewAuthHandler(us)
 
-	// Setting Routes
 	handlers.SetupRoutes(e, ah, ch, ih, anh)
 
-	// Start Server
 	e.Logger.Fatal(e.Start(":3000"))
 }

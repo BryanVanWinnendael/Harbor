@@ -29,8 +29,10 @@ func SetupRoutes(e *echo.Echo, ah *AuthHandler, ch *ContainerHandler, ih *ImageH
 	protectedGroup.POST("containers/:id/recreate", ch.recreateContainer)
 	protectedGroup.DELETE("containers/:id/remove", ch.removeContainer)
 	protectedGroup.GET("containers/:id/stats", ch.getContainerStats)
-	protectedGroup.POST("mysql/create", ch.setupMySQLContainer)
 	protectedGroup.POST("containers/:id/exec", ch.execCommandInContainer)
+
+	protectedGroup.POST("mysql/create", ch.setupMySQLContainer)
+
 	protectedGroup.POST("prune/containers", ch.pruneContainers)
 	protectedGroup.POST("prune/images", ch.pruneImages)
 	protectedGroup.POST("prune/volumes", ch.pruneVolumes)

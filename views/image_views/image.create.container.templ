@@ -1,58 +1,128 @@
 package image_views
 
 templ ImageCreateContainer(imageID, imageName string) {
-<!-- Trigger button -->
-<button data-dialog-target={"dialog-create-image-container-" + imageName}
-	class="w-fit h-full flex items-center justify-center gap-2 bg-black hover:bg-neutral-900 text-white font-bold py-2 px-4 rounded stroke-white border border-neutral-800/50 transition duration-100">
-	<svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-		<path
-			d="M2 7.5C2 6.71403 2.16486 5.96657 2.46189 5.29031L5.01041 7.83883C5.79146 8.61988 7.05779 8.61988 7.83884 7.83883C8.61989 7.05779 8.61989 5.79146 7.83884 5.01041L5.29032 2.46189C5.96658 2.16486 6.71404 2 7.5 2C10.5376 2 13 4.46243 13 7.5C13 8.28596 12.8351 9.03342 12.5381 9.70968L21.435 18.6066C22.2161 19.3877 22.2161 20.654 21.435 21.435V21.435C20.654 22.2161 19.3877 22.2161 18.6066 21.435L9.70968 12.5381C9.03342 12.8351 8.28597 13 7.5 13C4.46243 13 2 10.5376 2 7.5Z"
-			stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
-	</svg>
-	create container
-</button>
-
-<!-- Backdrop -->
-<div data-dialog-backdrop={"dialog-create-image-container-" + imageName} data-dialog-backdrop-close="true"
-	class="hidden fixed inset-0 z-[999] grid h-screen w-screen place-items-center bg-black bg-opacity-60 backdrop-blur-sm transition-opacity duration-300">
-
-	<!-- Dialog panel -->
-	<div data-dialog={"dialog-create-image-container-" + imageName}
-		class="relative m-4 w-2/5 min-w-[40%] sm:max-w-[40%] max-w-[90%] h-fit border border-neutral-800/50 rounded-lg bg-[#171717] font-sans text-base font-light leading-relaxed text-white antialiased shadow-2xl opacity-0 scale-95 transition duration-200 p-4">
-
-		<div class="w-full h-full px-5 shadow-lg bg-black pb-4 rounded-lg flex flex-col gap-4">
-			<form hx-swap="transition:true" hx-headers="js:{'X-TimeZone': Intl.DateTimeFormat().resolvedOptions().timeZone}"
-				action={ templ.URL("/images/" + imageID + "/container" ) } method="post" class="flex flex-col gap-4">
-
-				<label class="flex flex-col gap-2">
-					Image:
-					<input type="text" name="image" value={ imageName } disabled
-						class="w-full bg-[#1c1c1c] border border-neutral-800/50 py-2 pl-3 rounded mt-2 outline-none" />
-				</label>
-
-				<label class="flex flex-col gap-2">
-					Container name:
-					<input type="text" name="name" required
-						class="w-full bg-[#1c1c1c] border border-neutral-800/50 py-2 pl-3 rounded mt-2 outline-none" />
-				</label>
-
-				<label class="flex flex-col gap-2">
-					Mapped Port:
-					<input type="text" name="mappedPort" placeholder="host_port:container_port || host_port"
-						class="w-full bg-[#1c1c1c] border border-neutral-800/50 py-2 pl-3 rounded mt-2 outline-none" />
-				</label>
-
-				<label class="flex flex-col gap-2">
-					Env:
-					<input type="text" name="env" placeholder="key1=value1,key2=value2"
-						class="w-full bg-[#1c1c1c] border border-neutral-800/50 py-2 pl-3 rounded mt-2 outline-none" />
-				</label>
-
-				<button type="submit" class="bg-neutral-200 rounded-md w-full px-3 py-2 text-black">
-					Create Container
-				</button>
-			</form>
+	<button
+		type="button"
+		data-dialog-target={ "dialog-create-image-container-" + imageName }
+		class="w-fit h-full flex items-center justify-center stroke-white gap-2 bg-black hover:bg-neutral-900 text-white font-bold py-2 px-4 rounded border border-neutral-800/50 transition duration-100"
+	>
+		<svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+			<path
+				d="M2 7.5C2 6.71403 2.16486 5.96657 2.46189 5.29031L5.01041 7.83883C5.79146 8.61988 7.05779 8.61988 7.83884 7.83883C8.61989 7.05779 8.61989 5.79146 7.83884 5.01041L5.29032 2.46189C5.96658 2.16486 6.71404 2 7.5 2C10.5376 2 13 4.46243 13 7.5C13 8.28596 12.8351 9.03342 12.5381 9.70968L21.435 18.6066C22.2161 19.3877 22.2161 20.654 21.435 21.435V21.435C20.654 22.2161 19.3877 22.2161 18.6066 21.435L9.70968 12.5381C9.03342 12.8351 8.28597 13 7.5 13C4.46243 13 2 10.5376 2 7.5Z"
+				stroke-width="2"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+			></path>
+		</svg>
+		create container
+	</button>
+	<div
+		data-dialog-backdrop={ "dialog-create-image-container-" + imageName }
+		data-dialog-backdrop-close="true"
+		class="hidden fixed inset-0 z-[999] flex h-screen w-screen items-center justify-center bg-black bg-opacity-60 p-4 backdrop-blur-sm"
+	>
+		<div
+			data-dialog={ "dialog-create-image-container-" + imageName }
+			class="relative w-full max-w-md overflow-hidden rounded-lg border border-neutral-800/50 bg-[#171717] text-white shadow-2xl opacity-0 scale-95 transition duration-200"
+		>
+			<div class="bg-black p-5">
+				<div class="flex items-start gap-3">
+					<div class="min-w-0">
+						<h3 class="text-xl font-semibold tracking-tight">
+							Create container
+						</h3>
+						<p class="mt-2 text-sm leading-6 text-gray-400">
+							Create a new container from this image.
+						</p>
+					</div>
+					<button
+						type="button"
+						data-dialog-close="true"
+						class="ml-auto shrink-0 text-gray-500 transition hover:text-gray-200"
+					>
+						<svg
+							width="18"
+							height="18"
+							viewBox="0 0 24 24"
+							fill="none"
+							xmlns="http://www.w3.org/2000/svg"
+						>
+							<path
+								d="M6 6L18 18M18 6L6 18"
+								stroke="currentColor"
+								stroke-width="1.5"
+								stroke-linecap="round"
+							></path>
+						</svg>
+					</button>
+				</div>
+				<form
+					hx-swap="transition:true"
+					hx-headers="js:{'X-TimeZone': Intl.DateTimeFormat().resolvedOptions().timeZone}"
+					action={ templ.URL("/images/" + imageID + "/container") }
+					method="post"
+					class="mt-8"
+				>
+					<div class="flex flex-col gap-5">
+						<label class="flex flex-col gap-2 text-sm font-medium text-gray-300">
+							Image
+							<input
+								type="text"
+								name="image"
+								value={ imageName }
+								disabled
+								class="w-full rounded-lg border border-neutral-800/50 bg-[#0b0b0b] px-3 py-2.5 text-sm text-gray-400 outline-none"
+							/>
+						</label>
+						<label class="flex flex-col gap-2 text-sm font-medium text-gray-300">
+							Container name
+							<input
+								type="text"
+								name="name"
+								autocomplete="off"
+								placeholder="my-container"
+								required
+								class="w-full rounded-lg border border-neutral-800/50 bg-[#0b0b0b] px-3 py-2.5 text-sm text-white outline-none transition placeholder:text-gray-600 focus:border-neutral-700"
+							/>
+						</label>
+						<label class="flex flex-col gap-2 text-sm font-medium text-gray-300">
+							Mapped port
+							<input
+								type="text"
+								name="mappedPort"
+								autocomplete="off"
+								placeholder="host_port:container_port or host_port"
+								class="w-full rounded-lg border border-neutral-800/50 bg-[#0b0b0b] px-3 py-2.5 text-sm text-white outline-none transition placeholder:text-gray-600 focus:border-neutral-700"
+							/>
+						</label>
+						<label class="flex flex-col gap-2 text-sm font-medium text-gray-300">
+							Environment
+							<input
+								type="text"
+								name="env"
+								autocomplete="off"
+								placeholder="key1=value1,key2=value2"
+								class="w-full rounded-lg border border-neutral-800/50 bg-[#0b0b0b] px-3 py-2.5 text-sm text-white outline-none transition placeholder:text-gray-600 focus:border-neutral-700"
+							/>
+						</label>
+					</div>
+					<div class="mt-8 flex justify-end gap-3">
+						<button
+							type="button"
+							data-dialog-close="true"
+							class="bg-black hover:bg-neutral-900 text-white font-bold py-2 px-4 rounded border border-neutral-800/50 transition duration-100"
+						>
+							cancel
+						</button>
+						<button
+							type="submit"
+							class="bg-neutral-200 hover:bg-white text-black font-bold py-2 px-4 rounded border border-neutral-800/50 transition duration-100"
+						>
+							create container
+						</button>
+					</div>
+				</form>
+			</div>
 		</div>
 	</div>
-</div>
 }

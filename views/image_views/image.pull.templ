@@ -1,40 +1,107 @@
 package image_views
 
 templ ImagePull() {
-<!-- Open button -->
-<button data-dialog-target="dialog-pull-image"
-	class="w-fit h-full flex items-center justify-center gap-2 bg-black hover:bg-neutral-900 text-white font-bold py-2 px-4 rounded stroke-white border border-neutral-800/50 transition duration-100">
-	<svg width="16" height="16" viewBox="0 0 21 21" xmlns="http://www.w3.org/2000/svg">
-		<g fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round" transform="translate(3 3)">
-			<path d="m3.5 10.5 4 4 4-4"></path>
-			<path d="m7.5 3.5v11"></path>
-			<path d="m.5.5h14"></path>
-		</g>
-	</svg>
-	pull
-</button>
-
-<!-- Backdrop -->
-<div data-dialog-backdrop="dialog-pull-image" data-dialog-backdrop-close="true"
-	class="hidden fixed inset-0 z-[999] grid h-screen w-screen place-items-center bg-black bg-opacity-60 backdrop-blur-sm transition-opacity duration-300">
-
-	<!-- Dialog panel -->
-	<div data-dialog="dialog-pull-image"
-		class="relative m-4 w-2/5 min-w-[40%] sm:max-w-[40%] max-w-[90%] min-h-[60%] sm:max-h-[60%] max-h-[80%] h-full border border-neutral-800/50 rounded-lg bg-[#171717] font-sans text-base font-light leading-relaxed text-white antialiased shadow-2xl opacity-0 scale-95 transition duration-200">
-
-		<div class="w-full h-full">
-			<div class="px-5 shadow-lg bg-black rounded-lg leading-normal flex flex-col justify-center w-full h-full">
-				<form hx-swap="transition:true" hx-headers="js:{'X-TimeZone': Intl.DateTimeFormat().resolvedOptions().timeZone}"
-					class="rounded-xl drop-shadow-xl flex flex-col gap-4 mt-4" action="/images/pull" method="post">
-
-					<label class="flex flex-col justify-start gap-2">
-						Image:
-						<input class="w-full bg-[#1c1c1c] border border-neutral-800/50 py-2 pl-3 rounded mt-2 outline-none"
-							type="text" name="image" required />
+	<button
+		type="button"
+		data-dialog-target="dialog-pull-image"
+		class="w-fit h-full flex items-center justify-center gap-2 bg-black hover:bg-neutral-900 text-white font-bold py-2 px-4 rounded border border-neutral-800/50 transition duration-100"
+	>
+		<svg
+			width="16"
+			height="16"
+			viewBox="0 0 21 21"
+			xmlns="http://www.w3.org/2000/svg"
+		>
+			<g
+				fill="none"
+				fill-rule="evenodd"
+				stroke="currentColor"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				transform="translate(3 3)"
+			>
+				<path d="m3.5 10.5 4 4 4-4"></path>
+				<path d="m7.5 3.5v11"></path>
+				<path d="m.5.5h14"></path>
+			</g>
+		</svg>
+		pull
+	</button>
+	<div
+		data-dialog-backdrop="dialog-pull-image"
+		data-dialog-backdrop-close="true"
+		class="hidden fixed inset-0 z-[999] flex h-screen w-screen items-center justify-center bg-black bg-opacity-60 p-4 backdrop-blur-sm"
+	>
+		<div
+			data-dialog="dialog-pull-image"
+			class="relative w-full max-w-md overflow-hidden rounded-lg border border-neutral-800/50 bg-[#171717] text-white shadow-2xl opacity-0 scale-95 transition duration-200"
+		>
+			<div class="bg-black p-5">
+				<div class="flex items-start gap-3">
+					<div class="min-w-0">
+						<h3 class="text-xl font-semibold tracking-tight">
+							Pull image
+						</h3>
+						<p class="mt-2 text-sm leading-6 text-gray-400">
+							Pull a Docker image from a registry.
+						</p>
+					</div>
+					<button
+						type="button"
+						data-dialog-close="true"
+						class="ml-auto shrink-0 text-gray-500 transition hover:text-gray-200"
+					>
+						<svg
+							width="18"
+							height="18"
+							viewBox="0 0 24 24"
+							fill="none"
+							xmlns="http://www.w3.org/2000/svg"
+						>
+							<path
+								d="M6 6L18 18M18 6L6 18"
+								stroke="currentColor"
+								stroke-width="1.5"
+								stroke-linecap="round"
+							></path>
+						</svg>
+					</button>
+				</div>
+				<form
+					hx-swap="transition:true"
+					hx-headers="js:{'X-TimeZone': Intl.DateTimeFormat().resolvedOptions().timeZone}"
+					class="mt-8"
+					action="/images/pull"
+					method="post"
+				>
+					<label class="flex flex-col gap-2 text-sm font-medium text-gray-300">
+						Image
+						<input
+							autocomplete="off"
+							class="w-full rounded-lg border border-neutral-800/50 bg-[#0b0b0b] px-3 py-2.5 text-sm text-white outline-none transition placeholder:text-gray-600 focus:border-neutral-700"
+							type="text"
+							name="image"
+							placeholder="e.g. nginx:latest"
+							required
+						/>
 					</label>
+					<div class="mt-8 flex justify-end gap-3">
+						<button
+							type="button"
+							data-dialog-close="true"
+							class="bg-black hover:bg-neutral-900 text-white font-bold py-2 px-4 rounded border border-neutral-800/50 transition duration-100"
+						>
+							cancel
+						</button>
+						<button
+							type="submit"
+							class="bg-neutral-200 hover:bg-white text-black font-bold py-2 px-4 rounded border border-neutral-800/50 transition duration-100"
+						>
+							pull image
+						</button>
+					</div>
 				</form>
 			</div>
 		</div>
 	</div>
-</div>
 }
