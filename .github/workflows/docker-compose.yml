@@ -16,6 +16,12 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Create .env
+        run: |
+          cat > .env << EOF
+          SECRET_KEY="test_secret_key"
+          EOF
+
       - name: Build services
         run: docker compose build
 
