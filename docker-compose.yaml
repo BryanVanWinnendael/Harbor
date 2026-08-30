@@ -1,10 +1,7 @@
-version: "3.8"
 services:
   harbor:
     container_name: harbor
-    build:
-      dockerfile: Dockerfile
-      context: .
+    image: ghcr.io/bryanvanwinnendael/harbor:latest
     ports:
       - "8004:3000"
     restart: unless-stopped
@@ -12,5 +9,4 @@ services:
       - .env
     volumes:
       - ./data:/app/data
-      - ./css/output.css:/app/css/output.css
       - /var/run/docker.sock:/var/run/docker.sock
